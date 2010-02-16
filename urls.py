@@ -33,6 +33,7 @@ urlpatterns = patterns("",
     (r"^notices/", include("notification.urls")),
     (r"^announcements/", include("announcements.urls")),
     (r"^waitinglist/", include("waitinglist.urls")),
+    (r"^messages/", include("messages.urls")),
     
     (r"^photos/", include("photos.urls")),
     (r"^avatar/", include("avatar.urls")),

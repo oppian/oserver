@@ -1,7 +1,7 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
-{% load waitinglist_tags %}
+{% load ifsetting_tag %}
 
 {% block head_title %}{% trans "Welcome" %}{% endblock %}
 
@@ -31,33 +31,29 @@
     
     <p>
         {% blocktrans %}
-        This project demonstrates the use of a waiting list and signup
-        codes for sites in private beta. Otherwise it is the same as
-        basic_project.
+        This project demonstrates a social networking site. It provides
+        profiles, friends, photos, blogs, tribes, wikis, tweets, bookmarks,
+        swaps, locations and user-to-user messaging.
+        {% endblocktrans %}
+    </p>
+    <p>
+        {% blocktrans %}
+        In 0.5 this was called "complete_project".
         {% endblocktrans %}
     </p>
     
     <hr />
-    
-    <p>
-        We are currently in active development. If you would like to receive a
-        beta code for this please give us your e-mail address below
-    </p>
-    
-    <form method="POST" action="{% url waitinglist_list_signup %}">
-        {% csrf_token %}
-        {% waitinglist_entry_form as form %}
-        {{ form.as_p }}
-        <input type="submit" value="Sign up" />
-    </form>
-    
-    <p>- or -</p>
-    
-    <p>You can use a sign-up code to sign-up with the site right now.</p>
-    
-    <form method="GET" action="{% url acct_signup %}">
-        <input type="text" name="code" />
-        <input type="submit" value="Sign up" />
-    </form>
+    {% if user.is_authenticated %}
+        {% url what_next as what_next_url %}
+        <p class="what_next">{% blocktrans %}Wondering <a href="{{ what_next_url }}">What Next</a>?{% endblocktrans %}</p>
+    {% else %}
+        {% url acct_login as login_url %}
+        {% ifsetting ACCOUNT_OPEN_SIGNUP %}
+            {% url acct_signup as signup_url %}
+            <p>{% blocktrans %}You can <a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">Log in</a> to try out the site.{% endblocktrans %}</p>
+        {% else %}
+            <p>{% blocktrans %}You can <a href="{{ login_url }}">Log in</a> to try out the site.{% endblocktrans %}</p>
+        {% endifsetting %}
+    {% endif %}
     
 {% endblock %}

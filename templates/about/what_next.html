@@ -18,7 +18,18 @@
             <dt><a href="{% url profile_detail user %}">fill out your profile</a></dt>
             <dd>to tell the world a little about yourself.</dd>
             
+            <dt><a href="{% url avatar_change %}">add an avatar</a></dt>
+            <dd>so people can see what you look like.</dd>
+            
+            <dt><a href="{% url tribe_list %}">join some tribes</a></dt>
+            <dd>to find people with similar interests to share and discuss with.</dd>
+            
+            <dt><a href="{% url profile_list %}">connect with friends</a></dt>
+            <dd>so you can follow what they're up to.</dd>
+            
             {% ifsetting ACCOUNT_OPEN_SIGNUP %}
+                <dt><a href="{% url invitations %}">invite more people to the site</a></dt>
+                <dd>so more people can share in the fun.</dd>
             {% else %}
                 {% if user.is_staff %}
                     <dt><a href="{% url admin_invite_user %}">invite more people to the site</a> [admin only]</dt>

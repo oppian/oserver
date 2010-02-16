@@ -167,6 +167,7 @@ INSTALLED_APPS = [
     "friends",
     "django_sorting",
     "wiki",
+    "messages",
     
     # internal (for now)
     "basic_profiles",
@@ -201,10 +202,10 @@ WIKI_MARKUP_CHOICES = MARKUP_CHOICES
 AUTH_PROFILE_MODULE = "basic_profiles.Profile"
 NOTIFICATION_LANGUAGE_MODULE = "account.Account"
 
-ACCOUNT_OPEN_SIGNUP = False
-ACCOUNT_REQUIRED_EMAIL = False
-ACCOUNT_EMAIL_VERIFICATION = False
-ACCOUNT_EMAIL_AUTHENTICATION = False
+ACCOUNT_OPEN_SIGNUP = True
+ACCOUNT_REQUIRED_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = True
+ACCOUNT_EMAIL_AUTHENTICATION = True
 ACCOUNT_UNIQUE_EMAIL = EMAIL_CONFIRMATION_UNIQUE_EMAIL = False
 
 if ACCOUNT_EMAIL_AUTHENTICATION:
@@ -236,6 +237,12 @@ AUTHENTICATED_EXEMPT_URLS = [
 DEBUG_TOOLBAR_CONFIG = {
     "INTERCEPT_REDIRECTS": False,
 }
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'oppster@oppian.com'
+EMAIL_HOST_PASSWORD = '67S948'
+EMAIL_PORT = 587
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
