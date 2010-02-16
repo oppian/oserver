@@ -1,0 +1,21 @@
+oserver
+-------
+
+dev installation
+----------------
+
+http://pinaxproject.com/docs/dev/contributing.html
+
+setup virtual env:
+
+> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
+
+
+activate virtual env (unix/mac):
+
+> source pinax-dev/bin/activate
+
+install external requirements:
+
+> pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
+
