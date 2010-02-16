@@ -1,17 +1,43 @@
+from django.conf import settings
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Example:
-    # (r'^oserver/', include('oserver.foo.urls')),
+from account.openid_consumer import PinaxConsumer
 
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
+
+handler500 = "pinax.views.server_error"
+
+
+if settings.ACCOUNT_OPEN_SIGNUP:
+    signup_view = "account.views.signup"
+else:
+    signup_view = "signup_codes.views.signup"
+
+
+urlpatterns = patterns("",
+    url(r"^$", direct_to_template, {
+        "template": "homepage.html",
+    }, name="home"),
+    
+    url(r"^admin/invite_user/$", "signup_codes.views.admin_invite_user", name="admin_invite_user"),
+    url(r"^account/signup/$", signup_view, name="acct_signup"),
+    
+    (r"^about/", include("about.urls")),
+    (r"^account/", include("account.urls")),
+    (r"^openid/(.*)", PinaxConsumer()),
+    (r"^profiles/", include("basic_profiles.urls")),
+    (r"^notices/", include("notification.urls")),
+    (r"^announcements/", include("announcements.urls")),
+    (r"^waitinglist/", include("waitinglist.urls")),
+    
+    (r"^admin/", include(admin.site.urls)),
 )
+
+if settings.SERVE_MEDIA:
+    urlpatterns += patterns("",
+        (r"", include("staticfiles.urls")),
+    )

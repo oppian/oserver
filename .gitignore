@@ -1,2 +1,3 @@
 *.pyc
 pinax-dev
+dev.db
