@@ -104,6 +104,7 @@ MIDDLEWARE_CLASSES = [
     "account.middleware.AuthenticatedMiddleware",
     "django.middleware.doc.XViewMiddleware",
     "pagination.middleware.PaginationMiddleware",
+    'django_sorting.middleware.SortingMiddleware',
     "pinax.middleware.security.HideSensistiveFieldsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
@@ -163,6 +164,9 @@ INSTALLED_APPS = [
     "threadedcomments_extras",
     "flag",
     "avatar",
+    "friends",
+    "django_sorting",
+    "wiki",
     
     # internal (for now)
     "basic_profiles",
@@ -172,6 +176,9 @@ INSTALLED_APPS = [
     
     # internal, added
     "photos",
+    "tribes",
+    "tag_app",
+    "topics",
     
     "about",
 ]

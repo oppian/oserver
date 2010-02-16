@@ -7,6 +7,7 @@
 {% block extra_head_base %}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/site_tabs.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/photos.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/tabs.css" />
     {% block extra_head %}{% endblock %}
 {% endblock %}
 
@@ -23,6 +24,7 @@
 {% block right_tabs %}
     {% if user.is_authenticated %}
         <ul class="tabs">{% spaceless %}
+            <li id="tab_tribes"><a href="{% url tribe_list %}">{% trans "Tribes" %}</a></li>
             <li id="tab_photos"><a href="{% url photos %}">{% trans "Photos" %}</a></li>
             <li id="tab_profile"><a href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
             <li id="tab_notices"><a href="{% url notification_notices %}">{% trans "Notices" %}{% if notice_unseen_count %} ({{ notice_unseen_count }}){% endif %}</a></li>

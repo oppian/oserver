@@ -38,6 +38,9 @@ urlpatterns = patterns("",
     (r"^avatar/", include("avatar.urls")),
     (r"^flag/", include("flag.urls")),
     (r"^comments/", include("threadedcomments.urls")),
+    (r"^tribes/", include("tribes.urls")),
+    (r"^tags/", include("tag_app.urls")),
+    (r"^invitations/", include("friends_app.urls")),
     
     (r"^admin/", include(admin.site.urls)),
 )
