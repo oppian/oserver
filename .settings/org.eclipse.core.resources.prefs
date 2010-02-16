@@ -1,5 +1,7 @@
-#Tue Feb 16 13:45:49 GMT 2010
+#Tue Feb 16 16:04:09 GMT 2010
 eclipse.preferences.version=1
 encoding//lib/pinax/pinax/projects/intranet_project/settings.py=utf-8
 encoding//lib/pinax/pinax/projects/private_beta_project/settings.py=utf-8
+encoding//lib/pinax/pinax/projects/social_project/settings.py=utf-8
+encoding/<project>=UTF-8
 encoding/settings.py=utf-8
