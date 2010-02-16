@@ -23,6 +23,7 @@ INTERNAL_IPS = [
 
 ADMINS = [
     # ("Your Name", "your_email@domain.com"),
+    ("Matthew Jacobi", "matt@oppian.com"),
 ]
 
 MANAGERS = ADMINS
@@ -154,11 +155,23 @@ INSTALLED_APPS = [
     "staticfiles",
     "debug_toolbar",
     
+    # external, added since project
+    "photologue",
+    "tagging",
+    "groups",
+    "threadedcomments",
+    "threadedcomments_extras",
+    "flag",
+    "avatar",
+    
     # internal (for now)
     "basic_profiles",
     "account",
     "waitinglist",
     "signup_codes",
+    
+    # internal, added
+    "photos",
     
     "about",
 ]
@@ -198,8 +211,8 @@ else:
 
 EMAIL_CONFIRMATION_DAYS = 2
 EMAIL_DEBUG = DEBUG
-CONTACT_EMAIL = "feedback@example.com"
-SITE_NAME = "Pinax"
+CONTACT_EMAIL = "info@oppian.com"
+SITE_NAME = "Oppster"
 LOGIN_URL = "/account/login/"
 LOGIN_REDIRECT_URLNAME = "what_next"
 

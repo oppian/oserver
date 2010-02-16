@@ -34,6 +34,11 @@ urlpatterns = patterns("",
     (r"^announcements/", include("announcements.urls")),
     (r"^waitinglist/", include("waitinglist.urls")),
     
+    (r"^photos/", include("photos.urls")),
+    (r"^avatar/", include("avatar.urls")),
+    (r"^flag/", include("flag.urls")),
+    (r"^comments/", include("threadedcomments.urls")),
+    
     (r"^admin/", include(admin.site.urls)),
 )
 
