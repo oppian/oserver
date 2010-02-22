@@ -6,16 +6,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 from account.openid_consumer import PinaxConsumer
-
+from account.forms import GroupEmailSignupForm
 
 
 handler500 = "pinax.views.server_error"
-
-
-if settings.ACCOUNT_OPEN_SIGNUP:
-    signup_view = "account.views.signup"
-else:
-    signup_view = "signup_codes.views.signup"
+ 
 
 
 urlpatterns = patterns("",
@@ -24,7 +19,7 @@ urlpatterns = patterns("",
     }, name="home"),
     
     url(r"^admin/invite_user/$", "signup_codes.views.admin_invite_user", name="admin_invite_user"),
-    url(r"^account/signup/$", signup_view, name="acct_signup"),
+    url(r"^account/signup/$", 'account.views.signup', { 'form_class': GroupEmailSignupForm }, name="acct_signup"),
     
     (r"^about/", include("about.urls")),
     (r"^account/", include("account.urls")),

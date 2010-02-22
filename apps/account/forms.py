@@ -256,7 +256,41 @@ class SignupForm(GroupForm):
             new_user.save()
         
         return self.user_credentials() # required for authenticate()
+    
+class EmailSignupForm(SignupForm):
+    """
+    A signup form that autogenerates the username for use in email
+    login (username-less) setups.
+    """
+    
+    name = forms.CharField(
+        label = _("Name"),
+        max_length = 100,
+        widget = forms.TextInput()
+    )
+    
+    def __init__(self, *args, **kwargs):
+        if 'username' in self.base_fields:
+            del self.base_fields['username']
+        super(EmailSignupForm, self).__init__(*args, **kwargs)
+        # reorder fields
+        # could specificy each field but we just want to put name, email first
+        self.fields.keyOrder.remove('email')
+        self.fields.keyOrder.remove('name')
+        self.fields.keyOrder.insert(0, 'email')
+        self.fields.keyOrder.insert(0, 'name')
 
+class GroupEmailSignupForm(EmailSignupForm):
+    """
+    A signup form that autogenerates the username for use in email
+    login (username-less) setups.
+    """  
+
+    group = forms.CharField(
+        label = _("Group"),
+        max_length = 30,
+        widget = forms.TextInput()
+    )
 
 class OpenIDSignupForm(forms.Form):
     
