@@ -6,8 +6,7 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">C:\git\oserver\pinax-dev\Scripts\python.exe</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/oserver/lib/pinax</path>
-<path>/oserver/pinax-dev/Lib/site-packages</path>
-<path>/oserver/pinax-dev/Lib</path>
 <path>/oserver/apps</path>
+<path>/oserver/lib/pinax/pinax/apps</path>
 </pydev_pathproperty>
 </pydev_project>
