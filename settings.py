@@ -165,16 +165,12 @@ INSTALLED_APPS = [
     "threadedcomments_extras",
     "flag",
     "avatar",
-    "friends",
     "django_sorting",
-    "wiki",
     "messages",
     
     # internal (for now)
     "basic_profiles",
     "account",
-    "waitinglist",
-    "signup_codes",
     
     # internal, added
     "photos",
@@ -243,8 +239,8 @@ AUTHENTICATED_EXEMPT_URLS = [
     r"^/account/password_reset",
     r"^/account/confirm_email",
     r"/openid",
-    r"^/waitinglist",
     r"^/__debug__",
+    r"^/about",
 ]
 
 DEBUG_TOOLBAR_CONFIG = {
