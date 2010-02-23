@@ -1,6 +1,3 @@
 [submodule "lib/pinax"]
 	path = lib/pinax
 	url = git@github.com:oppianmatt/pinax.git
-[submodule "lib/pyfacebook"]
-	path = lib/pyfacebook
-	url = git://github.com/sciyoshi/pyfacebook.git
