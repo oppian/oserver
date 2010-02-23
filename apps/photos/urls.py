@@ -17,4 +17,7 @@ urlpatterns = patterns("",
     url(r"^destroy/(?P<id>\d+)/$", "photos.views.destroy", name="photo_destroy"),
     #edit photo
     url(r"^edit/(?P<id>\d+)/$", "photos.views.edit", name="photo_edit"),
+    #fetch from facebook
+    url(r"^facebook/$", "photos.views.fbphotos", name="photo_fbphotos"),
+    url(r"^fblogin/$", "photos.views.fblogin", name="photo_fblogin"),
 )

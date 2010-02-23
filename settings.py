@@ -7,6 +7,7 @@ import pinax
 
 PINAX_ROOT = os.path.abspath(os.path.dirname(pinax.__file__))
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+LIB_ROOT = os.path.join(PROJECT_ROOT, "lib")
 
 # tells Pinax to use the default theme
 PINAX_THEME = "default"
@@ -180,6 +181,7 @@ INSTALLED_APPS = [
     "tribes",
     "tag_app",
     "topics",
+    "oshare",
     
     "about",
 ]
@@ -201,6 +203,17 @@ WIKI_MARKUP_CHOICES = MARKUP_CHOICES
 
 AUTH_PROFILE_MODULE = "basic_profiles.Profile"
 NOTIFICATION_LANGUAGE_MODULE = "account.Account"
+
+# display name, otherwise use email since no username
+def user_display(user):
+    try:
+        profile = user.get_profile()
+        if profile.name:
+            return profile.name
+    except:
+        pass
+    return user.email
+ACCOUNT_USER_DISPLAY = user_display
 
 ACCOUNT_OPEN_SIGNUP = True
 ACCOUNT_REQUIRED_EMAIL = True
@@ -243,6 +256,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'oppster@oppian.com'
 EMAIL_HOST_PASSWORD = '67S948'
 EMAIL_PORT = 587
+
+# Facebook Connect application settings
+FACEBOOK_API_KEY = '58da47aefc7150717424b6dfb3cb3b1b'
+FACEBOOK_SECRET_KEY = 'b5b94bc1fa8507734b72ff88ffd13e6a'
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
