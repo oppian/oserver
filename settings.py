@@ -202,6 +202,17 @@ WIKI_MARKUP_CHOICES = MARKUP_CHOICES
 AUTH_PROFILE_MODULE = "basic_profiles.Profile"
 NOTIFICATION_LANGUAGE_MODULE = "account.Account"
 
+# display name, otherwise use email since no username
+def user_display(user):
+    try:
+        profile = user.get_profile()
+        if profile.name:
+            return profile.name
+    except:
+        pass
+    return user.email
+ACCOUNT_USER_DISPLAY = user_display
+
 ACCOUNT_OPEN_SIGNUP = True
 ACCOUNT_REQUIRED_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = True
