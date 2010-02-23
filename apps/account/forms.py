@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 from django.utils.encoding import smart_unicode
 from django.utils.hashcompat import sha_constructor
 from django.utils.http import int_to_base36
+from django.template.defaultfilters import slugify
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -256,7 +257,65 @@ class SignupForm(GroupForm):
             new_user.save()
         
         return self.user_credentials() # required for authenticate()
+    
+class EmailSignupForm(SignupForm):
+    """
+    A signup form that autogenerates the username for use in email
+    login (username-less) setups.
+    """
 
+    def __init__(self, *args, **kwargs):
+        if 'username' in self.base_fields:
+            del self.base_fields['username']
+        super(EmailSignupForm, self).__init__(*args, **kwargs)
+        # reorder fields
+        # could specificy each field but we just want to put email first
+        self.fields.keyOrder.remove('email')
+        self.fields.keyOrder.insert(0, 'email')
+        
+    def create_user(self, username=None, commit=True):
+        if username is not None:
+            raise NotImplementedError("EmailSignupForm.create_user does not handle "
+                "a username case. You must override this method.")
+        username = self.cleaned_data["email"].strip().lower()
+        return super(EmailSignupForm, self).create_user(username=username, commit=commit)
+        
+
+class GroupEmailSignupForm(EmailSignupForm):
+    """
+    A signup form that autogenerates the username for use in email
+    login (username-less) setups.
+    """  
+
+    group = forms.CharField(
+        label = _("Group"),
+        max_length = 30,
+        widget = forms.TextInput()
+    )
+    
+    def save(self, request=None):
+        """
+        Save the user as normal, but then create the group
+        """
+        # normal signupform behaviour
+        ret = super(GroupEmailSignupForm, self).save(request=request)
+        # import as needed
+        from tribes import models as tribes
+        # get form data
+        group_name = self.cleaned_data['group']
+        user = User.objects.get(email=self.cleaned_data["email"])
+        # create the group
+        group = tribes.Tribe(
+            name=group_name, 
+            slug=slugify(group_name),
+            creator=user,
+        )
+        group.save()
+        # add user to group
+        group.members.add(user)
+        # return as normal
+        return ret
+        
 
 class OpenIDSignupForm(forms.Form):
     
