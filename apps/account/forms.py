@@ -262,23 +262,23 @@ class EmailSignupForm(SignupForm):
     A signup form that autogenerates the username for use in email
     login (username-less) setups.
     """
-    
-    name = forms.CharField(
-        label = _("Name"),
-        max_length = 100,
-        widget = forms.TextInput()
-    )
-    
+
     def __init__(self, *args, **kwargs):
         if 'username' in self.base_fields:
             del self.base_fields['username']
         super(EmailSignupForm, self).__init__(*args, **kwargs)
         # reorder fields
-        # could specificy each field but we just want to put name, email first
+        # could specificy each field but we just want to put email first
         self.fields.keyOrder.remove('email')
-        self.fields.keyOrder.remove('name')
         self.fields.keyOrder.insert(0, 'email')
-        self.fields.keyOrder.insert(0, 'name')
+        
+    def create_user(self, username=None, commit=True):
+        if username is not None:
+            raise NotImplementedError("EmailSignupForm.create_user does not handle "
+                "a username case. You must override this method.")
+        username = self.cleaned_data["email"].strip().lower()
+        return super(EmailSignupForm, self).create_user(username=username, commit=commit)
+        
 
 class GroupEmailSignupForm(EmailSignupForm):
     """
