@@ -6,6 +6,8 @@ dev installation
 
 http://pinaxproject.com/docs/dev/contributing.html
 
+(Note: For Max OSX use the full path to the python, it has troubles with symbolic links)
+
 setup virtual env:
 
 > python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev

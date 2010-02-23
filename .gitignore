@@ -2,4 +2,6 @@
 pinax-dev
 dev.db
 site_media/media/photologue
-.settings/org.eclipse.core.resource.prefs
+.pydevproject
+.settings
+.project
