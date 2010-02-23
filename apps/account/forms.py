@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 from django.utils.encoding import smart_unicode
 from django.utils.hashcompat import sha_constructor
 from django.utils.http import int_to_base36
+from django.template.defaultfilters import slugify
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -291,6 +292,30 @@ class GroupEmailSignupForm(EmailSignupForm):
         max_length = 30,
         widget = forms.TextInput()
     )
+    
+    def save(self, request=None):
+        """
+        Save the user as normal, but then create the group
+        """
+        # normal signupform behaviour
+        ret = super(GroupEmailSignupForm, self).save(request=request)
+        # import as needed
+        from tribes import models as tribes
+        # get form data
+        group_name = self.cleaned_data['group']
+        user = User.objects.get(email=self.cleaned_data["email"])
+        # create the group
+        group = tribes.Tribe(
+            name=group_name, 
+            slug=slugify(group_name),
+            creator=user,
+        )
+        group.save()
+        # add user to group
+        group.members.add(user)
+        # return as normal
+        return ret
+        
 
 class OpenIDSignupForm(forms.Form):
     
