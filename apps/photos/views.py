@@ -344,7 +344,7 @@ def fbphotos(request,
     fb_user = None;
     fb_albums = None;
     
-    next_url = 'http://localhost:8000/photos/fblogin/'
+    next_url = 'http://%s/photos/fblogin/' % request.META['HTTP_HOST']
     cancel_url = 'http://www.facebook.com/connect/login_failure.html'
     fb_login_url = 'http://www.facebook.com/login.php?api_key=%s&connect_display=popup&v=1.0&next=%s&cancel_url=%s&fbconnect=true&return_session=true&session_key_only=true&req_perms=read_stream,offline_access' % (settings.FACEBOOK_API_KEY, next_url, cancel_url)
         
