@@ -52,7 +52,12 @@ TIME_ZONE = "Europe/London"
 # http://blogs.law.harvard.edu/tech/stories/storyReader$15
 LANGUAGE_CODE = "en"
 
+# site details
 SITE_ID = 1
+# work out the domain name for default site
+# for local debugging on ports other than 80, this should be overridden in settings_local.py 
+#import socket
+#SITE_DOMAIN = socket.gethostname()
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -182,6 +187,7 @@ INSTALLED_APPS = [
     "oshare",
     
     "about",
+    "defaultsite",
 ]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
