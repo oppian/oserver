@@ -15,3 +15,7 @@ class UserFacebookSession(models.Model):
     uid = CharField(max_length=20, editable=False, unique=True)
     session_key = CharField(max_length=64, editable=False, unique=True)    
     secret = CharField(max_length=64, editable=False, unique=True)
+    
+    def __unicode__(self):
+        return '%s : %s' % (self.user.username, self.uid)
+    

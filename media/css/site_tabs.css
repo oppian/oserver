@@ -1,12 +1,18 @@
 /* SITE-SPECIFIC TAB STYLING */
 
 body.profile #tab_profile a,
-body.notices #tab_notices a
+body.photos #tab_photos a,
+body.topics #tab_topics a,
+body.notices #tab_notices a,
+ul.tabs li.selected a
 {
     color: #000; /* selected tab text colour */
 }
 body.profile #tab_profile,
-body.notices #tab_notices
+body.photos #tab_photos,
+body.topics #tab_topics,
+body.notices #tab_notices,
+ul.tabs li.selected
 {
     margin: 0; /* to compensate for border */
     padding: 5px 0 5px;

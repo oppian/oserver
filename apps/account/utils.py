@@ -24,8 +24,11 @@ def get_default_redirect(request, redirect_field_name="next",
     redirect_to = request.REQUEST.get(redirect_field_name)
     # light security check -- make sure redirect_to isn't garabage.
     if not redirect_to or "://" in redirect_to or " " in redirect_to:
-        redirect_to = default_redirect_to
-    return redirect_to
+        try:
+            redirect_to = request.user.get_profile().primary_group.get_absolute_url()
+        except:
+            redirect_to = default_redirect_to
+        return redirect_to
 
 
 def user_display(user):

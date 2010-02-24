@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load avatar_tags %}
+{% load account_tags %}
+
+{% user_display other_user as other_user_display %}
+
+{% if is_me %}
+    <div class="groups">
+        <h2>{% trans "Your Tribes" %}</h2>
+        {% if other_user.tribes.all %}
+            {% for tribe in other_user.tribes.all %}
+                <a href="{% url tribe_detail tribe.slug %}">{{ tribe.name }}</a>
+            {% endfor %}
+        {% else %}
+            {% url tribe_list as tribe_url %}
+            <p>{% blocktrans %}You are not yet a member of any <a href="{{ tribe_url }}">tribes</a>.{% endblocktrans %}</p>
+        {% endif %}
+    </div>
+{% endif %}
