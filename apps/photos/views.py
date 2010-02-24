@@ -327,7 +327,7 @@ def destroy(request, id, group_slug=None, bridge=None):
 
 @login_required
 def fbphotos(request, 
-             template_name="photos/facebook.html", group_slug=None, bridge=None):
+             template_name="photos/facebook.html", group_slug=None, bridge=None, fb_login_view='photo_fblogin'):
     """
     Fetch photos from facebook
     """
@@ -335,16 +335,18 @@ def fbphotos(request,
     if bridge:
         try:
             group = bridge.get_group(group_slug)
+            fb_login_url = bridge.reverse(fb_login_view, group)
         except ObjectDoesNotExist:
             raise Http404
     else:
         group = None
+        fb_login_url = reverse(fb_login_view)
         
     # look up user's facebook session (if they have one)
     fb_user = None;
     fb_albums = None;
     
-    next_url = 'http://%s/photos/fblogin/' % request.META['HTTP_HOST']
+    next_url = 'http://%s%s' % (request.META['HTTP_HOST'], fb_login_url)
     cancel_url = 'http://www.facebook.com/connect/login_failure.html'
     fb_login_url = 'http://www.facebook.com/login.php?api_key=%s&connect_display=popup&v=1.0&next=%s&cancel_url=%s&fbconnect=true&return_session=true&session_key_only=true&req_perms=read_stream,offline_access' % (settings.FACEBOOK_API_KEY, next_url, cancel_url)
         
