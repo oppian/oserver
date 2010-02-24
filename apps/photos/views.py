@@ -344,7 +344,7 @@ def fbphotos(request,
         
     # look up user's facebook session (if they have one)
     fb_user = None;
-    fb_albums = None;
+    albums = None;
     
     next_url = 'http://%s%s' % (request.get_host(), fb_login_url)
     cancel_url = 'http://www.facebook.com/connect/login_failure.html'
@@ -359,15 +359,22 @@ def fbphotos(request,
         try:
             fb_user = fb.users.getInfo(fb.uid)[0]
             fb_albums = fb.photos.getAlbums()
+            # since facebook doesn't give us the album cover image urls directly we need to retrieve them in batch
+            cover_pids_csv = ', '.join([album['cover_pid'] for album in fb_albums])
+            cover_urls = [photo['src_small'] for photo in fb.photos.get(pids=cover_pids_csv)]
+            albums = []
+            for album in fb_albums:
+                new_album = {'aid': album['aid'], 'name':album['name'], 'cover_url':cover_urls[len(albums)]}
+                albums.append(new_album)
         except:
             fb_session.delete()
     except UserFacebookSession.DoesNotExist:
         pass
-            
+    
          
     return render_to_response(template_name, {
         "fb_user": fb_user,
-        "fb_albums": fb_albums,
+        "fb_albums": albums,
         "fb_login_url": fb_login_url,
         }, context_instance=RequestContext(request))
     
