@@ -283,8 +283,8 @@ class EmailSignupForm(SignupForm):
 
 class GroupEmailSignupForm(EmailSignupForm):
     """
-    A signup form that autogenerates the username for use in email
-    login (username-less) setups.
+    An EmailSignupForm (username-less) that also asks for a group
+    which it creates and makes you a member.
     """  
 
     group = forms.CharField(

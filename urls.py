@@ -18,7 +18,6 @@ urlpatterns = patterns("",
         "template": "homepage.html",
     }, name="home"),
     
-    url(r"^admin/invite_user/$", "signup_codes.views.admin_invite_user", name="admin_invite_user"),
     url(r"^account/signup/$", 'account.views.signup', { 'form_class': GroupEmailSignupForm }, name="acct_signup"),
     
     (r"^about/", include("about.urls")),
@@ -27,7 +26,6 @@ urlpatterns = patterns("",
     (r"^profiles/", include("basic_profiles.urls")),
     (r"^notices/", include("notification.urls")),
     (r"^announcements/", include("announcements.urls")),
-    (r"^waitinglist/", include("waitinglist.urls")),
     (r"^messages/", include("messages.urls")),
     
     (r"^photos/", include("photos.urls")),
@@ -36,7 +34,6 @@ urlpatterns = patterns("",
     (r"^comments/", include("threadedcomments.urls")),
     (r"^tribes/", include("tribes.urls")),
     (r"^tags/", include("tag_app.urls")),
-    (r"^invitations/", include("friends_app.urls")),
     
     (r"^admin/", include(admin.site.urls)),
 )
