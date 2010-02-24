@@ -157,6 +157,8 @@ INSTALLED_APPS = [
     "staticfiles",
     "debug_toolbar",
     
+    'autoslug',
+    
     # external, added since project
     "photologue",
     "tagging",
