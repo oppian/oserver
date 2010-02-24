@@ -49,6 +49,7 @@
         {% if group %}
 			<ul class="tabs">{% spaceless %}
 			    <li id="tab_photos"><a href="{% groupurl photos group %}">{% trans "Photos" %}</a></li>
+			    <li id="tab_topics"><a href="{% groupurl topic_list group %}">{% trans "Topics" %}</a></li>
 			{% endspaceless %}</ul>
         {% endif %}
     {% endif %}
