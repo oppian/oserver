@@ -283,8 +283,8 @@ class EmailSignupForm(SignupForm):
 
 class GroupEmailSignupForm(EmailSignupForm):
     """
-    A signup form that autogenerates the username for use in email
-    login (username-less) setups.
+    An EmailSignupForm (username-less) that also asks for a group
+    which it creates and makes you a member.
     """  
 
     group = forms.CharField(
@@ -313,6 +313,9 @@ class GroupEmailSignupForm(EmailSignupForm):
         group.save()
         # add user to group
         group.members.add(user)
+        # set as primary group
+        user.get_profile().primary_group = group
+        user.get_profile().save()
         # return as normal
         return ret
         
