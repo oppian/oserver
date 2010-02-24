@@ -313,6 +313,9 @@ class GroupEmailSignupForm(EmailSignupForm):
         group.save()
         # add user to group
         group.members.add(user)
+        # set as primary group
+        user.get_profile().primary_group = group
+        user.get_profile().save()
         # return as normal
         return ret
         

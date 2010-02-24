@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
-
+from tribes import models as tribes
 
 
 class Profile(models.Model):
@@ -15,6 +15,7 @@ class Profile(models.Model):
     about = models.TextField(_("about"), null=True, blank=True)
     location = models.CharField(_("location"), max_length=40, null=True, blank=True)
     website = models.URLField(_("website"), null=True, blank=True, verify_exists=False)
+    primary_group = models.ForeignKey(tribes.Tribe, verbose_name=_("primary group"), null=True)
     
     class Meta:
         verbose_name = _("profile")
