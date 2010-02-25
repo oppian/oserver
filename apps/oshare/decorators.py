@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 import facebook
 
@@ -38,7 +39,7 @@ def fb_login_required(func):
             next_url = '%s?nextview=%s' % (request.build_absolute_uri(fb_login_path), request.get_full_path())
             cancel_url = 'http://www.facebook.com/connect/login_failure.html'
             fb_login_url = 'http://www.facebook.com/login.php?api_key=%s&connect_display=page&v=1.0&next=%s&cancel_url=%s&fbconnect=true&return_session=true&session_key_only=false&req_perms=offline_access' % (settings.FACEBOOK_API_KEY, next_url, cancel_url)
-            resp = render_to_response('oshare/fb_login.html', {"fb_login_url": fb_login_url} )
+            resp = render_to_response('oshare/fb_login.html', {"fb_login_url": fb_login_url} , context_instance=RequestContext(request))
             
         return resp      
     
