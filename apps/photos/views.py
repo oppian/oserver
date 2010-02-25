@@ -23,6 +23,7 @@ from photos.models import Image, Pool
 from photos.forms import PhotoUploadForm, PhotoEditForm
 
 from oshare.models import UserFacebookSession
+from oshare.decorators import fb_login_required
 
 
 
@@ -325,7 +326,7 @@ def destroy(request, id, group_slug=None, bridge=None):
     
     return HttpResponseRedirect(redirect_to)
 
-@login_required
+@fb_login_required
 def fbphotos(request, 
              template_name="photos/facebook.html", group_slug=None, bridge=None, fb_login_view='photo_fblogin'):
     """
@@ -342,36 +343,26 @@ def fbphotos(request,
         group = None
         fb_login_url = reverse(fb_login_view)
         
-    # look up user's facebook session (if they have one)
     fb_user = None;
     albums = None;
-    
     next_url = 'http://%s%s' % (request.get_host(), fb_login_url)
     cancel_url = 'http://www.facebook.com/connect/login_failure.html'
     fb_login_url = 'http://www.facebook.com/login.php?api_key=%s&connect_display=page&v=1.0&next=%s&cancel_url=%s&fbconnect=true&return_session=true&session_key_only=false&req_perms=offline_access' % (settings.FACEBOOK_API_KEY, next_url, cancel_url)
-        
-    try:
-        fb_session = request.user.userfacebooksession; # reverse of OneToOneField
-        fb = facebook.Facebook(settings.FACEBOOK_API_KEY, settings.FACEBOOK_SECRET_KEY)
-        fb.session_key = fb_session.session_key
-        fb.secret = fb_session.secret
-        fb.uid = fb_session.uid
+    
+    if request.fb:
         try:
-            fb_user = fb.users.getInfo(fb.uid)[0]
-            fb_albums = fb.photos.getAlbums()
+            fb_user = request.fb.users.getInfo(request.fb.uid)[0]
+            fb_albums = request.fb.photos.getAlbums()
             # since facebook doesn't give us the album cover image urls directly we need to retrieve them in batch
             cover_pids_csv = ', '.join([album['cover_pid'] for album in fb_albums])
-            cover_urls = [photo['src_small'] for photo in fb.photos.get(pids=cover_pids_csv)]
+            cover_urls = [photo['src_small'] for photo in request.fb.photos.get(pids=cover_pids_csv)]
             albums = []
             for album in fb_albums:
                 new_album = {'aid': album['aid'], 'name':album['name'], 'cover_url':cover_urls[len(albums)]}
                 albums.append(new_album)
         except:
-            fb_session.delete()
-    except UserFacebookSession.DoesNotExist:
-        pass
-    
-         
+            request.fb_session.delete()
+
     return render_to_response(template_name, {
         "fb_user": fb_user,
         "fb_albums": albums,
