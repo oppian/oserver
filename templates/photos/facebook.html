@@ -6,7 +6,6 @@
 {% block head_title %}{% blocktrans %}Fetch your photos from Facebook{% endblocktrans %}{% endblock %}
 
 {% block body %}
-{% if fb_user %}
 <h2>Welcome {{ fb_user.name }}</h2>
 <h3>Photo Albums</h3>
 <table cellspacing="10" cellpadding="5">
@@ -18,9 +17,5 @@
 {% endfor %}
 </table>
 
-{% else %}
-<h2>You are not logged into facebook</h2>
-<a href="{{ fb_login_url }}"><img id="RES_ID_fb_login_image" src="http://static.ak.fbcdn.net/rsrc.php/zB6N8/hash/4li2k73z.gif" alt="Connect"/></a>
-{% endif %}
 {% endblock %}
 
