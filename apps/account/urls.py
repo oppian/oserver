@@ -23,7 +23,7 @@ urlpatterns = patterns("",
     url(r"^language/$", "account.views.language_change", name="acct_language_change"),
     url(r"^logout/$", "django.contrib.auth.views.logout", {"template_name": "account/logout.html"}, name="acct_logout"),
     
-    url(r"^confirm_email/(\w+)/$", "emailconfirmation.views.confirm_email", name="acct_confirm_email"),
+    url(r"^confirm_email/(\w+)/$", "account.views.confirm_email", name="emailconfirmation_confirm_email"),
     
     # password reset
     url(r"^password_reset/$", "account.views.password_reset", name="acct_passwd_reset"),

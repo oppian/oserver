@@ -228,6 +228,7 @@ ACCOUNT_UNIQUE_EMAIL = EMAIL_CONFIRMATION_UNIQUE_EMAIL = False
 if ACCOUNT_EMAIL_AUTHENTICATION:
     AUTHENTICATION_BACKENDS = [
         "account.auth_backends.EmailModelBackend",
+        "account.auth_backends.EmailVerificationModelBackend",
     ]
 else:
     AUTHENTICATION_BACKENDS = [
