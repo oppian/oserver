@@ -493,3 +493,23 @@ def other_services_remove(request):
     )
     
     return HttpResponseRedirect(reverse("acct_other_services"))
+
+def confirm_email(request, confirmation_key):
+    """
+    Confirms the email as normal, but then also logs the user in if succesful
+    """
+    email_address = None
+    user = authenticate(confirmation_key=confirmation_key)
+    if user:
+        auth_login(request, user)
+        try:
+            email_confirmation = EmailConfirmation.objects.get(confirmation_key=confirmation_key)
+            email_address = email_confirmation.email_address
+            # now delete the confirmation
+            email_confirmation.delete()
+        except:
+            pass
+        
+    return render_to_response("emailconfirmation/confirm_email.html", {
+        "email_address": email_address,
+    }, context_instance=RequestContext(request))

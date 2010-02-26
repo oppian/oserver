@@ -88,7 +88,6 @@ h1 {
 /* HEADER */
 
 #tabhead {
-    background: #035 url('../images/heading.png') left top repeat-x;
     border-bottom: 1px solid #000; /* tab border */
     position: relative;
 }
@@ -102,13 +101,11 @@ h1 {
     position: absolute;
     top: 6px;
     right: 15px;
-    color: #DEF; /* login bar text colour */
 }
 #tabhead .login a, #tabhead .login a:visited {
-    color: #DEF; /* login bar link colour */
 }
 #tabhead .login a:hover {
-    color: #FFF; /* login bar link hover colour */
+    color: #000; /* login bar link hover colour */
 }
 
 #locale_switcher {

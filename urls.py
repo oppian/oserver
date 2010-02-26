@@ -34,6 +34,7 @@ urlpatterns = patterns("",
     (r"^comments/", include("threadedcomments.urls")),
     (r"^tribes/", include("tribes.urls")),
     (r"^tags/", include("tag_app.urls")),
+    (r"^oshare/", include("oshare.urls")),
     
     (r"^admin/", include(admin.site.urls)),
 )
