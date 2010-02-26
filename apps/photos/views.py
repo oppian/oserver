@@ -1,30 +1,19 @@
-import json
-
-from django.db.models import Q
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect, get_host
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils import simplejson
-
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from groups.templatetags.group_tags import groupurl
-
-import facebook
-
-from photologue.models import *
-
-from photos.models import Image, Pool
-from photos.forms import PhotoUploadForm, PhotoEditForm
-
-from oshare.models import UserFacebookSession
+from django.utils.translation import ugettext
 from oshare.decorators import fb_login_required
-
+from oshare.models import UserFacebookSession
+from photos.forms import PhotoUploadForm, PhotoEditForm
+from photos.models import Pool, Image
 
 
 @login_required
@@ -104,7 +93,6 @@ def yourphotos(request, template_name="photos/yourphotos.html", group_slug=None,
         "photos": photos,
     }, context_instance=RequestContext(request))
 
-
 @login_required
 def photos(request, template_name="photos/latest.html", group_slug=None, bridge=None):
     """
@@ -131,15 +119,11 @@ def photos(request, template_name="photos/latest.html", group_slug=None, bridge=
     
     photos = photos.order_by("-date_added")
     
-    # check if ajax query
-    if request.is_ajax():
-        import json
-        return json.JsonResponse(photos)
-    
-    return render_to_response(template_name, {
+    return {
         "group": group,
         "photos": photos,
-    }, context_instance=RequestContext(request))
+        'TEMPLATE': template_name,
+    }
 
 
 @login_required
@@ -246,7 +230,7 @@ def edit(request, id, form_class=PhotoEditForm,
     
     if request.method == "POST":
         if photo.member != request.user:
-            message.add_message(request, messages.ERROR,
+            messages.add_message(request, messages.ERROR,
                 ugettext("You can't edit photos that aren't yours")
             )
             include_kwargs = {"id": photo.id}
@@ -313,7 +297,7 @@ def destroy(request, id, group_slug=None, bridge=None):
         redirect_to = reverse("photos_yours")
     
     if photo.member != request.user:
-        message.add_message(request, messages.ERROR,
+        messages.add_message(request, messages.ERROR,
             ugettext("You can't edit photos that aren't yours")
         )
         return HttpResponseRedirect(redirect_to)

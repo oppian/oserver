@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = [
     'django_sorting.middleware.SortingMiddleware',
     "pinax.middleware.security.HideSensistiveFieldsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'oshare.middleware.DualFormatMiddleware',
 ]
 
 ROOT_URLCONF = "oserver.urls"
