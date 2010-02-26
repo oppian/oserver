@@ -479,7 +479,7 @@ def other_services(request, **kwargs):
 
 
 @login_required
-def other_services_remove(request):
+def other_services_remove(request, **kwargs):
     
     group, bridge = group_and_bridge(kwargs)
     
@@ -494,10 +494,12 @@ def other_services_remove(request):
     
     return HttpResponseRedirect(reverse("acct_other_services"))
 
-def confirm_email(request, confirmation_key):
+def confirm_email(request, confirmation_key, **kwargs):
     """
     Confirms the email as normal, but then also logs the user in if succesful
     """
+    redirect_field_name = kwargs.pop("redirect_field_name", "next")
+    success_url = kwargs.pop("success_url", None)
     email_address = None
     user = authenticate(confirmation_key=confirmation_key)
     if user:
@@ -507,6 +509,15 @@ def confirm_email(request, confirmation_key):
             email_address = email_confirmation.email_address
             # now delete the confirmation
             email_confirmation.delete()
+            if success_url is None:
+                success_url = get_default_redirect(request, redirect_field_name)
+            messages.add_message(request, messages.SUCCESS,
+                ugettext(u"You have confirmed that %(email)s is an email address for user '%(user)s'.") % {
+                    "user": user_display(email_address.user),
+                    "email": email_address.email,
+                }
+            )
+            return HttpResponseRedirect(success_url)
         except:
             pass
         
