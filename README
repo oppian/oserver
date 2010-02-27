@@ -8,16 +8,23 @@ http://pinaxproject.com/docs/dev/contributing.html
 
 (Note: For Max OSX use the full path to the python, it has troubles with symbolic links)
 
-setup virtual env:
+** setup virtual env: **
+pc:> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
+mac:>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
 
-> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
-
-
-activate virtual env (unix/mac):
-
+** activate virtual env (unix/mac): **
 > source pinax-dev/bin/activate
 
-install external requirements:
-
+** install external requirements: **
 > pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
 
+** update 'local' requirements: (done after each sync) **
+> pip install -r requirements.txt
+
+> python manage.py syncdb
+> python manage.py runserver 0.0.0.0:8000
+
+
+
+** to send emails: **
+> python manage.py send_mail
