@@ -40,3 +40,15 @@ class PhotoEditForm(forms.ModelForm):
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
         super(PhotoEditForm, self).__init__(*args, **kwargs)
+
+class FacebookPhotosForm(forms.Form):
+    """
+    Maybe used for album ids (aids) or picture ids (pids)
+    """
+    
+    selected_ids = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label='')
+    
+    def __init__(self, objects=(), *args, **kwargs):
+        super(FacebookPhotosForm, self).__init__(*args, **kwargs)
+        # set choice field's choices dynamically
+        self.fields['selected_ids'].choices = [(obj['id'], obj['name']) for obj in objects]

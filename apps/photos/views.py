@@ -10,7 +10,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext
 from oshare.decorators import fb_login_required
-from photos.forms import PhotoUploadForm, PhotoEditForm
+from photos.forms import PhotoUploadForm, PhotoEditForm, FacebookPhotosForm
 from photos.models import Pool, Image
 
 
@@ -322,7 +322,7 @@ def fbphotos(request,
             raise Http404
     else:
         group = None
-
+        
     fb_user = request.fb.users.getInfo(request.fb.uid)[0]
     fb_albums = request.fb.photos.getAlbums()
     # since facebook doesn't give us the album cover image urls directly we need to retrieve them in batch
@@ -330,11 +330,26 @@ def fbphotos(request,
     cover_urls = [photo['src_small'] for photo in request.fb.photos.get(pids=cover_pids_csv)]
     albums = []
     for album in fb_albums:
-        new_album = {'aid': album['aid'], 'name':album['name'], 'cover_url':cover_urls[len(albums)]}
+        new_album = {'id': album['aid'], 'name':album['name'], 'thumb_url':cover_urls[len(albums)]}
         albums.append(new_album)
+        
+    if request.POST:
+        # Form is being submitted
+        albums_form = FacebookPhotosForm(objects=albums, data=request.POST)
+        if albums_form.is_valid():
+            # TODO: mark photos for import
+            selected = albums_form.cleaned_data['selected_ids']
+            if group:
+                redirect_to = bridge.reverse("photos", group)
+            else:
+                redirect_to = reverse("photos")
+            return HttpResponseRedirect(redirect_to)
+ 
+    albums_form = FacebookPhotosForm(objects=albums)
 
     return render_to_response(template_name, {
         "fb_user": fb_user,
         "fb_albums": albums,
+        "fb_form" : albums_form,
         }, context_instance=RequestContext(request))
 

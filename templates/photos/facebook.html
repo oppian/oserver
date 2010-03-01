@@ -11,11 +11,15 @@
 <table cellspacing="10" cellpadding="5">
 {% for album in fb_albums %}
 <tr>
-<td><img src="{{ album.cover_url }}"/></td>
+<td><img src="{{ album.thumb_url }}"/></td>
 <td>{{ album.name }}</td>
 </tr>
 {% endfor %}
 </table>
+<form action="{% url photo_fbphotos %}" method="POST">{% csrf_token %}
+{{ fb_form.as_table }}
+<input type="submit", name="submit", value="Import", id="submit"/>
+</form>
 
 {% endblock %}
 
