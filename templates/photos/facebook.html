@@ -2,13 +2,14 @@
 
 {% load i18n %}
 {% load uni_form_tags %}
+{% load group_tags %}
 
 {% block head_title %}{% blocktrans %}Fetch your photos from Facebook{% endblocktrans %}{% endblock %}
 
 {% block body %}
 <h2>Welcome {{ fb_user.name }}</h2>
 <h3>Photo Albums</h3>
-<form action="{% url photo_fbphotos %}" method="POST">{% csrf_token %}
+<form action="{% groupurl photo_fbphotos group %}" method="POST">{% csrf_token %}
 {{ fb_form.as_p }}
 <input type="submit", name="submit", value="Import", id="submit"/>
 </form>

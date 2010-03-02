@@ -32,25 +32,27 @@ class TableCheckboxSelectMultiple(SelectMultiple):
         for row in range(0, rows_count):
             start = row*self.cols_count
             output.append(u'<tr>')
-            for i in range(start, min(start+self.cols_count, len(all_choices))):
-                (option_value, option_label) = all_choices[i]
-                output.append(u'<td>')
-                
-                # If an ID attribute was given, add a numeric index as a suffix,
-                # so that the checkboxes don't all have the same ID attribute.
-                if has_id:
-                    final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
-                    label_for = u' for="%s"' % final_attrs['id']
+            for i in range(start, start+self.cols_count):
+                if i >= len(all_choices):
+                    output.append(u'<td>&nbsp;</td>')
                 else:
-                    label_for = ''
-    
-                cb = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
-                option_value = force_unicode(option_value)
-                rendered_cb = cb.render(name, option_value)
-                option_label = conditional_escape(force_unicode(option_label))
-                output.append(u'<div><img src="%s"/></div>' % self.thumb_urls[i]) 
-                output.append(u'<div><label%s>%s %s</label></div>' % (label_for, rendered_cb, option_label))
-                output.append(u'</td>')
+                    (option_value, option_label) = all_choices[i]
+                    output.append(u'<td>')
+                    # If an ID attribute was given, add a numeric index as a suffix,
+                    # so that the checkboxes don't all have the same ID attribute.
+                    if has_id:
+                        final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                        label_for = u' for="%s"' % final_attrs['id']
+                    else:
+                        label_for = ''
+        
+                    cb = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+                    option_value = force_unicode(option_value)
+                    rendered_cb = cb.render(name, option_value)
+                    option_label = conditional_escape(force_unicode(option_label))
+                    output.append(u'<div><img src="%s"/></div>' % self.thumb_urls[i]) 
+                    output.append(u'<div><label%s>%s %s</label></div>' % (label_for, rendered_cb, option_label))
+                    output.append(u'</td>')
             output.append(u'</tr>')
        
         output.append(u'</table>')

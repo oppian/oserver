@@ -1,8 +1,11 @@
-from django.conf import settings
+import urllib2
+from urlparse import urlparse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect, get_host
@@ -308,7 +311,8 @@ def destroy(request, id, group_slug=None, bridge=None):
 
     return HttpResponseRedirect(redirect_to)
 
-@fb_login_required
+        
+@fb_login_required    
 def fbphotos(request,
              template_name="photos/facebook.html", group_slug=None, bridge=None):
     """
@@ -337,8 +341,32 @@ def fbphotos(request,
         # Form is being submitted
         albums_form = FacebookPhotosForm(objects=albums, data=request.POST)
         if albums_form.is_valid():
-            # TODO: mark photos for import
-            selected = albums_form.cleaned_data['selected_ids']
+            for aid in albums_form.cleaned_data['selected_ids']:
+                # for each album ...
+                photos = request.fb.photos.get(aid=aid)
+                for photo in photos:
+                    url = photo['src_big']
+                    title = photo['caption']
+                    if not title:
+                        title = photo['pid']
+                    if len(url) == 0:
+                        url = photo['src']
+                        if len(url) == 0:
+                            url = photo['src_small']
+                    if len(url) > 0:
+                        img_temp = NamedTemporaryFile(delete=True)
+                        img_temp.write(urllib2.urlopen(url).read())
+                        img_temp.flush()
+                        name = urlparse(url).path.split('/')[-1]
+                        im = Image(title=title, caption=photo['caption'])
+                        im.member = request.user;
+                        im.image.save(name, File(img_temp))
+                        # in group context we create a Pool object for it
+                        if group:
+                            pool = Pool()
+                            pool.photo = im
+                            group.associate(pool)
+                            pool.save()
             if group:
                 redirect_to = bridge.reverse("photos", group)
             else:
@@ -348,6 +376,7 @@ def fbphotos(request,
     albums_form = FacebookPhotosForm(objects=albums)
 
     return render_to_response(template_name, {
+        "group": group,
         "fb_user": fb_user,
         "fb_albums": albums,
         "fb_form" : albums_form,
