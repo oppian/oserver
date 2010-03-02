@@ -4,7 +4,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from photos.models import Image
-
+from photos.widgets import TableCheckboxSelectMultiple
 
 
 class PhotoUploadForm(forms.ModelForm):
@@ -46,9 +46,12 @@ class FacebookPhotosForm(forms.Form):
     Maybe used for album ids (aids) or picture ids (pids)
     """
     
-    selected_ids = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label='')
+    selected_ids = forms.MultipleChoiceField(label='')
     
     def __init__(self, objects=(), *args, **kwargs):
         super(FacebookPhotosForm, self).__init__(*args, **kwargs)
         # set choice field's choices dynamically
-        self.fields['selected_ids'].choices = [(obj['id'], obj['name']) for obj in objects]
+        choices = [(obj['id'], obj['name']) for obj in objects]
+        thumbs = [obj['thumb_url'] for obj in objects]
+        self.fields['selected_ids'].choices = choices        
+        self.fields['selected_ids'].widget = TableCheckboxSelectMultiple(choices=choices, thumb_urls=thumbs, cols_count=3)
