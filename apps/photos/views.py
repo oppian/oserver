@@ -328,7 +328,7 @@ def fbphotos(request,
         group = None
         
     fb_user = request.fb.users.getInfo(request.fb.uid)[0]
-    fb_albums = request.fb.photos.getAlbums()
+    fb_albums = [album for album in request.fb.photos.getAlbums() if album['type'] != 'profile']
     # since facebook doesn't give us the album cover image urls directly we need to retrieve them in batch
     cover_pids_csv = ', '.join([album['cover_pid'] for album in fb_albums])
     cover_urls = [photo['src_small'] for photo in request.fb.photos.get(pids=cover_pids_csv)]
