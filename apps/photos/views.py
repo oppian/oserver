@@ -354,7 +354,7 @@ def fbphotos(request,
                         if len(url) == 0:
                             url = photo['src_small']
                     if len(url) > 0:
-                        img_temp = NamedTemporaryFile(delete=True)
+                        img_temp = NamedTemporaryFile()
                         img_temp.write(urllib2.urlopen(url).read())
                         img_temp.flush()
                         name = urlparse(url).path.split('/')[-1]
