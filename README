@@ -28,3 +28,8 @@ mac:>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/
 
 ** to send emails: **
 > python manage.py send_mail
+
+
+** when pinax/lib changes **
+> git submodule update
+> pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt

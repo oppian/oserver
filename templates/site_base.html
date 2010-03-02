@@ -21,12 +21,13 @@
 	            {% if group %}
 	                <a href="{{ group.get_absolute_url }}">{{ group }}</a>
 	            {% else %}
-	                <a href="{% url tribe_create %}">{% trans "Create Tribe" %}</a>
+	                <a href="{% url tribe_list %}">{% trans "Tribes" %}</a>
 	            {% endif %}
 	            <ul>
-	                <li><a href="{% url tribe_list %}">{% trans "Tribes" %}</a></li>
 		            {% for grp in user.tribes.all %}
+		              {% ifnotequal grp group %}
 			            <li><a href="{{ grp.get_absolute_url }}">{{ grp }}</a></li>
+			          {% endifnotequal %}
 			        {% endfor %}
 		        </ul>
 	        </li>
