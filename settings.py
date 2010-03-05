@@ -268,9 +268,23 @@ EMAIL_PORT = 587
 FACEBOOK_API_KEY = '58da47aefc7150717424b6dfb3cb3b1b'
 FACEBOOK_SECRET_KEY = 'b5b94bc1fa8507734b72ff88ffd13e6a'
 
+# AWS
+AWS_ACCESS_KEY_ID = '1EZPW78HVZMFXZXJXAR2'
+AWS_SECRET_ACCESS_KEY = 'ZXslmLM93TYrGA33GFyzIozSSN4VH1wrNXzyjXIt'
+
+# build
+AWS_BUILD_BUCKET_NAME = 'oserver-releases'
+BUILD_VERSION = ('0', '1')
+BUILD_APPNAME = 'oserver'
+BUILD_IGNORE = (
+    os.path.normpath(MEDIA_ROOT),
+    os.path.normpath(os.path.join(PROJECT_ROOT, 'pinax-dev')),
+    os.path.normpath(os.path.join(PROJECT_ROOT, 'ec2')),
+)
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 try:
-    from local_settings import *
+    from settings_local import *
 except ImportError:
     pass
