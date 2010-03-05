@@ -9,11 +9,12 @@ http://pinaxproject.com/docs/dev/contributing.html
 (Note: For Max OSX use the full path to the python, it has troubles with symbolic links)
 
 ** setup virtual env: **
-pc:> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
-mac:>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
+pc> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
+mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
 
-** activate virtual env (unix/mac): **
-> source pinax-dev/bin/activate
+** activate virtual env: **
+mac> source pinax-dev/bin/activate
+pc> pinax-dev\Scripts\activate.bat
 
 ** install external requirements: **
 > pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
@@ -21,7 +22,7 @@ mac:>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/
 ** update 'local' requirements: (done after each sync) **
 > pip install -r requirements.txt
 
-> python manage.py syncdb
+> python manage.py syncdb --noinput
 > python manage.py runserver 0.0.0.0:8000
 
 
@@ -33,3 +34,4 @@ mac:>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/
 ** when pinax/lib changes **
 > git submodule update
 > pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
+> pip install -r requirements.txt

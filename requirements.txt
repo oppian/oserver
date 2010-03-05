@@ -26,3 +26,5 @@ template_utils==0.4p2
 django-staticfiles==0.2.0
 
 django-autoslug
+boto
+git+http://github.com/oppian/django-build.git#egg=django-build
