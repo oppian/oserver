@@ -7,3 +7,4 @@ site_media/media/photologue
 .pydevproject
 .settings
 .project
+templates/VERSION.txt
