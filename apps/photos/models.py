@@ -90,7 +90,7 @@ class Pool(models.Model):
     photo = models.ForeignKey(Image)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey()
+    group = generic.GenericForeignKey()
     created_at = models.DateTimeField(_("created_at"), default=datetime.now)
     
     class Meta:
