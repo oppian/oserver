@@ -265,6 +265,13 @@ EMAIL_HOST_USER = 'oppster@oppian.com'
 EMAIL_HOST_PASSWORD = '67S948'
 EMAIL_PORT = 587
 
+# FIXTURES
+FIXTURE_DIRS = (
+    os.path.join(PROJECT_ROOT, "fixtures"),
+)
+
+# FACEBOOK
+
 # Facebook Connect application settings
 FACEBOOK_API_KEY = '58da47aefc7150717424b6dfb3cb3b1b'
 FACEBOOK_SECRET_KEY = 'b5b94bc1fa8507734b72ff88ffd13e6a'
