@@ -190,6 +190,7 @@ INSTALLED_APPS = [
     "about",
     "defaultsite",
     "build",
+    "chronograph",
 ]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"

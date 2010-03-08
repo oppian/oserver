@@ -27,4 +27,5 @@ django-staticfiles==0.2.0
 
 django-autoslug
 boto
-git+http://github.com/oppian/django-build.git#egg=django-build
+django-build
+django-chronograph
