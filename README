@@ -16,9 +16,11 @@ mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/p
 mac> source pinax-dev/bin/activate
 pc> pinax-dev\Scripts\activate.bat
 
+TODO: remove this line, freeze requirements and store them locally in our requirements.txt
 ** install external requirements: **
 > pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
 
+# TODO: create githook for this automatically
 ** update 'local' requirements: (done after each sync) **
 > pip install --no-deps -r requirements.txt
 
