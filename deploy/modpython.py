@@ -5,7 +5,7 @@ from os.path import abspath, dirname, join
 from site import addsitedir
 
 # activate virtualenv
-VIRTUALENV_BASE = "c:/git/oserver/pinax-dev"
+VIRTUALENV_BASE = "/sites/oserver/pinax-env"
 if not VIRTUALENV_BASE:
     raise Exception("VIRTUALENV_BASE is not set correctly.")
 
@@ -28,6 +28,7 @@ class PinaxModPythonHandler(ModPythonHandler):
         
         sys.path.insert(0, join(settings.PINAX_ROOT, "apps"))
         sys.path.insert(0, join(settings.PROJECT_ROOT, "apps"))
+        sys.path.insert(0, join(settings.LIB_ROOT, "pyfacebook"))
         
         return super(PinaxModPythonHandler, self).__call__(req)
 

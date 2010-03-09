@@ -18,7 +18,8 @@ class TableCheckboxSelectMultiple(SelectMultiple):
         super(TableCheckboxSelectMultiple, self).__init__(attrs, choices)
         self.thumb_urls = thumb_urls
         self.cols_count = cols_count
-        
+    
+    # TODO: move html part into a template and render that    
     def render(self, name, value, attrs=None, choices=()):
         if value is None: value = []
         has_id = attrs and 'id' in attrs

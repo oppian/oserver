@@ -44,3 +44,16 @@ class TribeUpdateForm(forms.ModelForm):
     class Meta:
         model = Tribe
         fields = ["name", "description"]
+        
+class GroupForm(forms.ModelForm):
+    def __init__(self, user=None, group=None, *args, **kwargs):
+        self.user = user
+        self.group = group
+        super(GroupForm, self).__init__(*args, **kwargs)
+        
+    def check_group_membership(self):
+        """
+        We only let valid group members.
+        """
+        if self.group and not self.group.user_is_member(self.user):
+            raise forms.ValidationError(_("You must be a member"))

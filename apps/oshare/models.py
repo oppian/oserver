@@ -8,6 +8,7 @@ from django.db.models.fields import CharField
 
 from photos.models import Image
 from tribes.models import Tribe
+from groups.base import GroupAware
 
 # Create your models here.
 
@@ -25,14 +26,13 @@ class UserFacebookSession(models.Model):
         return '%s : %s' % (self.user.username, self.uid)
     
 
-class FacebookPhotoAlbum(models.Model):
+class FacebookPhotoAlbum(GroupAware):
     """
     Class to represent a user's facebook album content
     """
-    aid = models.CharField(max_length=32, unique=True, db_index=True)
+    aid = models.CharField(max_length=32, db_index=True)
     name = models.TextField(blank=True)
     modified = models.DateTimeField(default=datetime.min) # actually maps to modified_major in FQL
-    tribes = models.ManyToManyField(Tribe, related_name='fb_photo_albums')
     owner = models.ForeignKey(User) # django user, not fb FQL owner
     
     def __unicode__(self):
@@ -42,7 +42,7 @@ class FacebookPhotoImage(models.Model):
     """
     Represents Image model instances that originate from Facebook album photos
     """
-    pid = models.CharField(max_length=32, unique=True, db_index=True)
+    pid = models.CharField(max_length=32, db_index=True)
     album = models.ForeignKey(FacebookPhotoAlbum, related_name='fb_photo_images')
     image = models.OneToOneField(Image)
     

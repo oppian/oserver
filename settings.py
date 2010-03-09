@@ -189,6 +189,8 @@ INSTALLED_APPS = [
     
     "about",
     "defaultsite",
+    "build",
+    "chronograph",
 ]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
@@ -263,13 +265,42 @@ EMAIL_HOST_USER = 'oppster@oppian.com'
 EMAIL_HOST_PASSWORD = '67S948'
 EMAIL_PORT = 587
 
+# FIXTURES
+FIXTURE_DIRS = (
+    os.path.join(PROJECT_ROOT, "fixtures"),
+)
+
+# FACEBOOK
+
 # Facebook Connect application settings
 FACEBOOK_API_KEY = '58da47aefc7150717424b6dfb3cb3b1b'
 FACEBOOK_SECRET_KEY = 'b5b94bc1fa8507734b72ff88ffd13e6a'
 
+# AWS
+AWS_ACCESS_KEY_ID = '1EZPW78HVZMFXZXJXAR2'
+AWS_SECRET_ACCESS_KEY = 'ZXslmLM93TYrGA33GFyzIozSSN4VH1wrNXzyjXIt'
+
+# build
+AWS_BUILD_BUCKET_NAME = 'oserver-releases'
+BUILD_VERSION = ('0', '1')
+BUILD_APPNAME = 'oserver'
+BUILD_IGNORE = [
+    os.path.normpath(os.path.join(PROJECT_ROOT, 'ec2')),
+]
+
+# add to ignore all files in gitignore except for VERSION.txt
+# TODO: move this to django-build
+try:
+	ignore_file = open('.gitignore')
+	for ignore_line in ignore_file:
+		if ignore_line[:-(len("VERSION.txt"))] != "VERSION.txt":
+			BUILD_IGNORE.append(os.path.normpath(os.path.join(PROJECT_ROOT, ignore_line[:-1])))
+except:
+	pass
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 try:
-    from local_settings import *
+    from settings_local import *
 except ImportError:
     pass

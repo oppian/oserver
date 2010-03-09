@@ -15,7 +15,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from oshare.models import UserFacebookSession, FacebookPhotoAlbum, FacebookPhotoImage
-from photos.models import Pool, Image
+from photos.models import Image
 
 def get_user_fb_session(user):
     """
@@ -36,15 +36,13 @@ def add_or_remove_fb_albums(user, tribe=None, albums=[]):
     depending if the album id is in list of albums
     """
     # remove albums belonging to this user that are NOT in aids from the tribe
-    user_fb_albums = FacebookPhotoAlbum.objects.filter(owner=user, tribes=tribe)
+    user_fb_albums = FacebookPhotoAlbum.objects.filter(owner=user)
+    if tribe:
+        user_fb_albums = tribe.content_objects(user_fb_albums)
     albums_to_remove = user_fb_albums.exclude(aid__in=[album['aid'] for album in albums])
     for album in albums_to_remove:
-        album.tribes.remove(tribe)
         # TODO: cascade remove all FacebookPhotoImage.image associations with the tribe 
-        if album.tribes.count() == 0:
-            album.delete()
-        else:
-            album.save()
+        album.delete()
         
     # associate new albums with the tribe
     for album in albums:
@@ -53,7 +51,7 @@ def add_or_remove_fb_albums(user, tribe=None, albums=[]):
                                              'name':album.get('name', '')
                                             })
         if tribe:
-            fb_photo_album.tribes.add(tribe)
+            tribe.associate(fb_photo_album)
         fb_photo_album.save()
         get_new_fb_album_photos(fb_photo_album)
             
@@ -76,6 +74,7 @@ def get_new_fb_album_photos(album):
         # First remove any photos that we already have but are no longer in the facebook album (user removed them)
         fbis_to_remove = album.fb_photo_images.exclude(pid__in=[photo['pid'] for photo in photos])
         for fbi in fbis_to_remove.all():
+            fbi.im.delete()
             fbi.delete() # TODO: do we have to call fbi.image.delete() or does this cascade?
         
         # get list of pids we already know about for this album
@@ -98,15 +97,10 @@ def get_new_fb_album_photos(album):
                 img_temp.write(urllib2.urlopen(url).read())
                 img_temp.flush()
                 name = urlparse(url).path.split('/')[-1]
-                im = Image(title=title, caption=photo['caption'])
-                im.member = album.owner;
+                im = Image(title=title, caption=photo['caption'], member=album.owner)
+                
+                album.group.associate(im)
                 im.image.save(name, File(img_temp))
-                # in group context we create a Pool object for it
-                for tribe in album.tribes.all():
-                    pool = Pool()
-                    pool.photo = im
-                    tribe.associate(pool)
-                    pool.save()
                 # create new FacebookPhotoImage model object to track this image
                 fbi = FacebookPhotoImage(pid=photo['pid'], album=album, image=im)
                 fbi.save()

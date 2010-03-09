@@ -1,0 +1,47 @@
+[
+  {
+    "pk": 1, 
+    "model": "chronograph.job", 
+    "fields": {
+      "next_run": "2010-03-08 17:44:18", 
+      "name": "Send Mail", 
+      "args": "", 
+      "last_run": "2010-03-08 17:43:18", 
+      "disabled": false, 
+      "frequency": "MINUTELY", 
+      "command": "send_mail", 
+      "is_running": false, 
+      "params": ""
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "chronograph.job", 
+    "fields": {
+      "next_run": "2010-03-08 17:44:24", 
+      "name": "Emit Notices", 
+      "args": "", 
+      "last_run": "2010-03-08 17:43:24", 
+      "disabled": false, 
+      "frequency": "MINUTELY", 
+      "command": "emit_notices", 
+      "is_running": false, 
+      "params": ""
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "chronograph.job", 
+    "fields": {
+      "next_run": "2010-03-08 18:02:26", 
+      "name": "Retry Deferred", 
+      "args": "", 
+      "last_run": "2010-03-08 17:42:26", 
+      "disabled": false, 
+      "frequency": "MINUTELY", 
+      "command": "retry_deferred", 
+      "is_running": false, 
+      "params": "interval:20"
+    }
+  }
+]

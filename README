@@ -9,27 +9,29 @@ http://pinaxproject.com/docs/dev/contributing.html
 (Note: For Max OSX use the full path to the python, it has troubles with symbolic links)
 
 ** setup virtual env: **
-pc:> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
-mac:>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev
+pc> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev --django-version=1.2.dev12229
+mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev --django-version=1.2.dev12229
 
-** activate virtual env (unix/mac): **
-> source pinax-dev/bin/activate
+** activate virtual env: **
+mac> source pinax-dev/bin/activate
+pc> pinax-dev\Scripts\activate.bat
 
-** install external requirements: **
-> pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
-
+# TODO: create githook for this automatically
 ** update 'local' requirements: (done after each sync) **
-> pip install -r requirements.txt
-
-> python manage.py syncdb
-> python manage.py runserver 0.0.0.0:8000
+pip install --no-deps -r requirements.txt
+python manage.py syncdb --noinput
+python manage.py runserver 0.0.0.0:8000
 
 
 
 ** to send emails: **
-> python manage.py send_mail
+> python manage.py cron
 
 
 ** when pinax/lib changes **
-> git submodule update
-> pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
+git submodule update
+rm -rf pinax-dev
+pc> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev --django-version=1.2.dev12229
+mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev --django-version=1.2.dev12229
+pip install --no-deps -r requirements.txt
+
