@@ -43,5 +43,23 @@
       "is_running": false, 
       "params": "interval:20"
     }
+  },
+  {
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+        "username": "admin", 
+        "first_name": "", 
+        "last_name": "", 
+        "is_active": true, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2010-03-09 18:24:15", 
+        "groups": [], 
+        "user_permissions": [], 
+        "password": "sha1$030aa$98300e79a7f44454af47a7a95e98798a78659c5c", 
+        "email": "oppster@oppian.com", 
+        "date_joined": "2010-03-09 18:24:15"
+    }
   }
 ]
