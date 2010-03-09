@@ -2,7 +2,7 @@ import re
 
 from django import template
 
-from photos.models import Image, Pool
+from photos.models import Image
 
 
 
@@ -10,6 +10,7 @@ register = template.Library()
 
 
 
+# TODO: move to a template
 class PrintExifNode(template.Node):
     
     def __init__(self, exif):
@@ -46,38 +47,28 @@ def do_print_exif(parser, token):
 
 class PublicPhotosNode(template.Node):
     
-    def __init__(self, context_var, user_var=None, use_pool=False):
+    def __init__(self, context_var, user_var=None):
         self.context_var = context_var
         if user_var is not None:
             self.user_var = template.Variable(user_var)
         else:
             self.user_var = None
-        self.use_pool = use_pool
     
     def render(self, context):
         
-        use_pool = self.use_pool
-        
-        if use_pool:
-            queryset = Pool.objects.filter(
-                photo__is_public = True,
-            ).select_related("photo")
-        else:
-            queryset = Image.objects.filter(is_public=True)
+        queryset = Image.objects.filter(is_public=True)
         
         if self.user_var is not None:
             user = self.user_var.resolve(context)
-            if use_pool:
-                queryset = queryset.filter(photo__member=user)
-            else:
-                queryset = queryset.filter(member=user)
+            queryset = queryset.filter(member=user)
         
+        # TODO: why is this a template tag? surely the view is responsible
         context[self.context_var] = queryset
         return ""
 
 
 @register.tag
-def public_photos(parser, token, use_pool=False):
+def public_photos(parser, token):
     
     bits = token.split_contents()
     
@@ -90,7 +81,7 @@ def public_photos(parser, token, use_pool=False):
                 message = "'%s' second argument must be 'as'" % bits[0]
                 raise template.TemplateSyntaxError(message)
             
-            return PublicPhotosNode(bits[2], use_pool=use_pool)
+            return PublicPhotosNode(bits[2])
             
         elif len(bits) == 5:
             if bits[1] != "for":
@@ -100,9 +91,5 @@ def public_photos(parser, token, use_pool=False):
                 message = "'%s' forth argument must be 'as'" % bits[0]
                 raise template.TemplateSyntaxError(message)
             
-            return PublicPhotosNode(bits[4], bits[2], use_pool=use_pool)
+            return PublicPhotosNode(bits[4], bits[2])
 
-
-@register.tag
-def public_pool_photos(parser, token):
-    return public_photos(parser, token, use_pool=True)

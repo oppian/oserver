@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from photos.models import Image, Pool
+from photos.models import Image
 
 
 
@@ -17,10 +17,5 @@ class PhotoAdmin(admin.ModelAdmin):
     ]
 
 
-class PoolAdmin(admin.ModelAdmin):
-    list_display = ["photo"]
-
-
 
 admin.site.register(Image, PhotoAdmin)
-admin.site.register(Pool, PoolAdmin)

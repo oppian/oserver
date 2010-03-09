@@ -13,6 +13,7 @@ from django.template import RequestContext
 import facebook
 
 from oshare.models import UserFacebookSession
+from oshare.fb_utils import get_user_fb_session
 
 def fb_login_required(func):
     
@@ -20,12 +21,7 @@ def fb_login_required(func):
         resp = None
         try:
             # look up user's facebook session (if they have one)
-            fb_session = request.user.userfacebooksession; # reverse of OneToOneField
-            # prev session found, setup Facebook object for REST api calls
-            fb = facebook.Facebook(settings.FACEBOOK_API_KEY, settings.FACEBOOK_SECRET_KEY)
-            fb.session_key = fb_session.session_key
-            fb.secret = fb_session.secret
-            fb.uid = fb_session.uid
+            fb_session, fb = get_user_fb_session(request.user)
             # store session and api object on the request for use by decorated view funcs
             request.fb = fb
             resp = func(request, *args, **kwargs)

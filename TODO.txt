@@ -1,0 +1,16 @@
+TODO LIST
+=========
+
+# TODO: fork mailer on github, fix with new lockfile.py, tell requirements.txt to use fork
+
+# TODO: same above but for notifications, fork version should rely on lockfile being installed
+
+# TODO: fix models.py in photos in pinax and push, group needs to be group not content_object
+
+# TODO: fix get_group kwargs in all views in pinax, group_and_bridge, tribe/group_slug
+
+# TODO: fix pool in photos
+
+# TODO: make bridge reverse work with group None
+
+# TODO: decorator to check for group membership

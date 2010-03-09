@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 
 from emailconfirmation.models import EmailAddress, EmailConfirmation
+from tribes.utils import group_and_bridge
 
 association_model = models.get_model("django_openid", "Association")
 if association_model is not None:
@@ -29,25 +30,6 @@ from account.forms import ChangeTimezoneForm, LoginForm, ResetPasswordKeyForm
 from account.forms import ResetPasswordForm, SetPasswordForm, SignupForm
 from account.forms import TwitterForm
 
-
-
-def group_and_bridge(kwargs):
-    """
-    Given kwargs from the view (with view specific keys popped) pull out the
-    bridge and fetch group from database.
-    """
-    
-    bridge = kwargs.pop("bridge", None)
-    
-    if bridge:
-        try:
-            group = bridge.get_group(**kwargs)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
-    
-    return group, bridge
 
 
 def group_context(group, bridge):

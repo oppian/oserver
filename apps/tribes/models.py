@@ -27,8 +27,4 @@ class Tribe(GroupBase, GroupAware):
         return self.name
     
     def get_absolute_url(self):
-        return reverse("tribe_detail", kwargs={"group_slug": self.slug})
-    
-    def get_url_kwargs(self):
-        return {"group_slug": self.slug}
-
+        return reverse("tribe_detail", kwargs={"tribe_slug": self.slug})
