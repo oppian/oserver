@@ -72,14 +72,11 @@ docutils==0.5
 smartypants==1.6.0.3
 
 
-# pinax project apps
-template_utils==0.4p2
-
 # added libs
-boto
+boto==1.9b
 
 # added apps
 django-autoslug==1.3.9
 django-build==0.2
 django-chronograph==svn-r21-git.2
-boto==1.9b
+
