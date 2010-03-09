@@ -22,3 +22,11 @@ TODO LIST
 # TODO: add test user into fixture
 
 # TODO: style multiselect widget to look like photologue style
+
+ * continous integration server
+  * with name based virtual hosting for 2 instances, prod and dev
+  * dev watches git, tests each submission, if passes test then deploys and email
+ * have rightscript which calls a manage.py command hook with settings to do post setup
+  * by default does a syncdb and other pinax related stuff
+  * also has ability to look at a script dir and runs all scripts there in alpha order
+  * can install ubuntu packages
