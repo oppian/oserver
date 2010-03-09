@@ -1,6 +1,8 @@
 TODO LIST
 =========
 
+# TODO: tribe invite
+
 # TODO: fork mailer on github, fix with new lockfile.py, tell requirements.txt to use fork
 
 # TODO: same above but for notifications, fork version should rely on lockfile being installed
@@ -16,3 +18,7 @@ TODO LIST
 # TODO: make bridge reverse work with group None
 
 # TODO: decorator to check for group membership
+
+# TODO: add test user into fixture
+
+# TODO: style multiselect widget to look like photologue style
