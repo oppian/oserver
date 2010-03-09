@@ -9,6 +9,8 @@ TODO LIST
 
 # TODO: fix get_group kwargs in all views in pinax, group_and_bridge, tribe/group_slug
 
+# TODO: fix tribes.html in pinax, photo_details url needs groupurl
+
 # TODO: fix pool in photos
 
 # TODO: make bridge reverse work with group None
