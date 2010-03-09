@@ -284,11 +284,16 @@ AWS_SECRET_ACCESS_KEY = 'ZXslmLM93TYrGA33GFyzIozSSN4VH1wrNXzyjXIt'
 AWS_BUILD_BUCKET_NAME = 'oserver-releases'
 BUILD_VERSION = ('0', '1')
 BUILD_APPNAME = 'oserver'
-BUILD_IGNORE = (
-    os.path.normpath(MEDIA_ROOT),
-    os.path.normpath(os.path.join(PROJECT_ROOT, 'pinax-dev')),
+BUILD_IGNORE = [
     os.path.normpath(os.path.join(PROJECT_ROOT, 'ec2')),
-)
+]
+
+# add to ignore all files in gitignore except for VERSION.txt
+# TODO: move this to django-build
+ignore_file = open('.gitignore')
+for ignore_line in ignore_file:
+	if ignore_line[:-(len("VERSION.txt"))] != "VERSION.txt":
+		BUILD_IGNORE.append(os.path.normpath(os.path.join(PROJECT_ROOT, ignore_line[:-1])))
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
