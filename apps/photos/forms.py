@@ -51,7 +51,7 @@ class FacebookPhotosForm(forms.Form):
     Maybe used for album ids (aids) or picture ids (pids)
     """
     
-    selected_ids = forms.MultipleChoiceField(label='')
+    selected_ids = forms.MultipleChoiceField(required=False, label='')
     
     def __init__(self, objects=(), *args, **kwargs):
         super(FacebookPhotosForm, self).__init__(*args, **kwargs)
