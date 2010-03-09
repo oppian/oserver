@@ -1,0 +1,77 @@
+[
+    {
+        "pk": 2, 
+        "model": "basic_profiles.profile", 
+        "fields": {
+            "website": "http://oppster.oppian.com", 
+            "about": "I'm just a test user, but that doesn't really bother me.", 
+            "primary_group": 1, 
+            "name": "John Oppster", 
+            "user": 2, 
+            "location": "London"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "emailconfirmation.emailaddress", 
+        "fields": {
+            "email": "john_oppster@oppian.com", 
+            "verified": true, 
+            "user": 2, 
+            "primary": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "account.account", 
+        "fields": {
+            "timezone": "Europe/London", 
+            "user": 2, 
+            "language": "en"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "tribes.tribe", 
+        "fields": {
+            "name": "family", 
+            "creator": 2, 
+            "group_content_type": null, 
+            "created": "2010-03-09 19:40:00", 
+            "group_object_id": null, 
+            "members": [
+                2
+            ], 
+            "slug": "family", 
+            "description": ""
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "oshare.userfacebooksession", 
+        "fields": {
+            "secret": "d9c2e469c136e6c8c03e82be1616b7d5", 
+            "session_key": "c132c6315b10afabf431ce85-100000851380201", 
+            "user": 2, 
+            "uid": "100000851380201"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "john_oppster@oppian.com", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2010-03-09 19:40:39", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$8644b$755e8052e7376b361b10f0149fa40283d553c650", 
+            "email": "john_oppster@oppian.com", 
+            "date_joined": "2010-03-09 19:40:00"
+        }
+    }
+]
