@@ -290,10 +290,13 @@ BUILD_IGNORE = [
 
 # add to ignore all files in gitignore except for VERSION.txt
 # TODO: move this to django-build
-ignore_file = open('.gitignore')
-for ignore_line in ignore_file:
-	if ignore_line[:-(len("VERSION.txt"))] != "VERSION.txt":
-		BUILD_IGNORE.append(os.path.normpath(os.path.join(PROJECT_ROOT, ignore_line[:-1])))
+try:
+	ignore_file = open('.gitignore')
+	for ignore_line in ignore_file:
+		if ignore_line[:-(len("VERSION.txt"))] != "VERSION.txt":
+			BUILD_IGNORE.append(os.path.normpath(os.path.join(PROJECT_ROOT, ignore_line[:-1])))
+except:
+	pass
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
