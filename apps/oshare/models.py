@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.db.models.fields import CharField
 
 from photos.models import Image
-from tribes.models import Tribe
 from groups.base import GroupAware
 
 # Create your models here.
@@ -46,4 +45,3 @@ class FacebookPhotoImage(models.Model):
     album = models.ForeignKey(FacebookPhotoAlbum, related_name='fb_photo_images')
     image = models.OneToOneField(Image)
     
- 
