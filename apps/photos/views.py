@@ -1,11 +1,7 @@
-import urllib2
-from urlparse import urlparse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files import File
-from django.core.files.temp import NamedTemporaryFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect, get_host
@@ -13,6 +9,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext
 from oshare.decorators import fb_login_required
+from oshare.fb_utils import add_or_remove_fb_albums
 from photos.forms import PhotoUploadForm, PhotoEditForm, FacebookPhotosForm
 from photos.models import Pool, Image
 
@@ -332,53 +329,30 @@ def fbphotos(request,
     # since facebook doesn't give us the album cover image urls directly we need to retrieve them in batch
     cover_pids_csv = ', '.join([album['cover_pid'] for album in fb_albums])
     cover_urls = [photo['src_small'] for photo in request.fb.photos.get(pids=cover_pids_csv)]
-    albums = []
-    for album in fb_albums:
-        new_album = {'id': album['aid'], 'name':album['name'], 'thumb_url':cover_urls[len(albums)]}
-        albums.append(new_album)
+    for i, album in enumerate(fb_albums):
+        album['thumb_url'] = cover_urls[i]
         
     if request.POST:
         # Form is being submitted
-        albums_form = FacebookPhotosForm(objects=albums, data=request.POST)
+        albums_form = FacebookPhotosForm(objects=fb_albums, data=request.POST)
         if albums_form.is_valid():
-            for aid in albums_form.cleaned_data['selected_ids']:
-                # for each album ...
-                photos = request.fb.photos.get(aid=aid)
-                for photo in photos:
-                    url = photo['src_big']
-                    title = photo['caption']
-                    if not title:
-                        title = photo['pid']
-                    if len(url) == 0:
-                        url = photo['src']
-                        if len(url) == 0:
-                            url = photo['src_small']
-                    if len(url) > 0:
-                        img_temp = NamedTemporaryFile()
-                        img_temp.write(urllib2.urlopen(url).read())
-                        img_temp.flush()
-                        name = urlparse(url).path.split('/')[-1]
-                        im = Image(title=title, caption=photo['caption'])
-                        im.member = request.user;
-                        im.image.save(name, File(img_temp))
-                        # in group context we create a Pool object for it
-                        if group:
-                            pool = Pool()
-                            pool.photo = im
-                            group.associate(pool)
-                            pool.save()
+            selected_ids = albums_form.cleaned_data['selected_ids']
+            selected_albums = [album for album in fb_albums if album['aid'] in selected_ids]
+            # create/associate/remove fb albums from the tribe as necessary
+            add_or_remove_fb_albums(request.user, tribe=group, albums=selected_albums)
+            
             if group:
                 redirect_to = bridge.reverse("photos", group)
             else:
                 redirect_to = reverse("photos")
             return HttpResponseRedirect(redirect_to)
  
-    albums_form = FacebookPhotosForm(objects=albums)
+    albums_form = FacebookPhotosForm(objects=fb_albums)
 
     return render_to_response(template_name, {
         "group": group,
         "fb_user": fb_user,
-        "fb_albums": albums,
+        "fb_albums": fb_albums,
         "fb_form" : albums_form,
         }, context_instance=RequestContext(request))
 
