@@ -43,5 +43,20 @@
       "is_running": false, 
       "params": "interval:20"
     }
+  },
+  {
+    "pk": 4, 
+    "model": "chronograph.job", 
+    "fields": {
+      "next_run": "2010-03-08 17:44:18", 
+      "name": "Facebook Sync", 
+      "args": "", 
+      "last_run": "2010-03-08 17:43:18", 
+      "disabled": false, 
+      "frequency": "MINUTELY", 
+      "command": "syncfb", 
+      "is_running": false, 
+      "params": ""
+    }
   }
 ]
