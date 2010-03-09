@@ -53,10 +53,11 @@ class FacebookPhotosForm(forms.Form):
     
     selected_ids = forms.MultipleChoiceField(required=False, label='')
     
-    def __init__(self, objects=(), *args, **kwargs):
+    def __init__(self, objects=(), initial=[], *args, **kwargs):
         super(FacebookPhotosForm, self).__init__(*args, **kwargs)
         # set choice field's choices dynamically
         choices = [(obj['aid'], obj['name']) for obj in objects]
         thumbs = [obj['thumb_url'] for obj in objects]
         self.fields['selected_ids'].choices = choices        
+        self.fields['selected_ids'].initial = initial        
         self.fields['selected_ids'].widget = TableCheckboxSelectMultiple(choices=choices, thumb_urls=thumbs, cols_count=3)

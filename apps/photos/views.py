@@ -11,6 +11,7 @@ from django.utils.translation import ugettext
 
 from oshare.decorators import fb_login_required
 from oshare.fb_utils import add_or_remove_fb_albums
+from oshare.models import FacebookPhotoAlbum
 
 
 from photos.forms import PhotoUploadForm, PhotoEditForm, FacebookPhotosForm
@@ -297,7 +298,11 @@ def fbphotos(request, template_name="photos/facebook.html", **kwargs):
                 redirect_to = reverse("photos")
             return HttpResponseRedirect(redirect_to)
  
-    albums_form = FacebookPhotosForm(objects=fb_albums)
+    # Get current tracked albums for this user/tribe to pre-select the form
+    user_fb_albums = FacebookPhotoAlbum.objects.filter(owner=request.user)
+    if group:
+        user_fb_albums = group.content_objects(user_fb_albums)
+    albums_form = FacebookPhotosForm(objects=fb_albums, initial=user_fb_albums.values_list('aid', flat=True))
 
     return {
         "TEMPLATE": template_name,
