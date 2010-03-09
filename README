@@ -33,5 +33,7 @@ git submodule update
 rm -rf pinax-dev
 pc> python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev --django-version=1.2.dev12229
 mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-dev --django-version=1.2.dev12229
+mac> source pinax-dev/bin/activate
+pc> pinax-dev\Scripts\activate.bat
 pip install --no-deps -r requirements.txt
 
