@@ -1,6 +1,8 @@
 TODO LIST
 =========
 
+# TODO: nail down requirements.txt
+
 # TODO: fork mailer on github, fix with new lockfile.py, tell requirements.txt to use fork
 
 # TODO: same above but for notifications, fork version should rely on lockfile being installed
