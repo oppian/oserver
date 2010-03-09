@@ -58,6 +58,7 @@ def get_new_fb_album_photos(album):
     """
     Import new photos from FacebookPhotoAlbum (album) and associate them with the tribe
     """
+    num_new_photos = 0
     try:
         fb_session, fb = get_user_fb_session(album.owner)
         
@@ -102,6 +103,7 @@ def get_new_fb_album_photos(album):
                 # create new FacebookPhotoImage model object to track this image
                 fbi = FacebookPhotoImage(pid=photo['pid'], album=album, image=im)
                 fbi.save()
+                num_new_photos = num_new_photos + 1
                 
         # update modified field in album 
         album.modified = fb_album_modified
@@ -111,4 +113,6 @@ def get_new_fb_album_photos(album):
         return
     except facebook.FacebookError:
         fb_session.delete()
+    
+    return num_new_photos
     
