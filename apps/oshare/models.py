@@ -35,7 +35,7 @@ class FacebookPhotoAlbum(GroupAware):
     owner = models.ForeignKey(User) # django user, not fb FQL owner
     
     def __unicode__(self):
-        return '%s : %s' % (self.name, self.aid)
+        return '%s : %s' % (self.aid, self.name)
     
 class FacebookPhotoImage(models.Model):
     """
@@ -44,4 +44,9 @@ class FacebookPhotoImage(models.Model):
     pid = models.CharField(max_length=32, db_index=True)
     album = models.ForeignKey(FacebookPhotoAlbum, related_name='fb_photo_images')
     image = models.OneToOneField(Image)
+    
+    def __unicode__(self):
+        return '%s : %s' % (self.pid, self.image)
+    
+    
     

@@ -45,9 +45,24 @@
     }
   },
   {
-    "pk": 1, 
-    "model": "auth.user", 
-    "fields": {
+      "pk": 4, 
+      "model": "chronograph.job", 
+      "fields": {
+        "next_run": "2010-03-08 17:44:18", 
+        "name": "Facebook Sync", 
+        "args": "", 
+        "last_run": "2010-03-08 17:43:18", 
+        "disabled": false, 
+        "frequency": "MINUTELY", 
+        "command": "syncfb", 
+        "is_running": false, 
+        "params": ""
+     }
+  },
+  {
+      "pk": 1, 
+      "model": "auth.user", 
+      "fields": {
         "username": "admin", 
         "first_name": "", 
         "last_name": "", 
@@ -60,6 +75,7 @@
         "password": "sha1$030aa$98300e79a7f44454af47a7a95e98798a78659c5c", 
         "email": "oppster@oppian.com", 
         "date_joined": "2010-03-09 18:24:15"
-    }
-  }
+      }  
+
+ }
 ]

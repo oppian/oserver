@@ -58,20 +58,23 @@ def get_new_fb_album_photos(album):
     """
     Import new photos from FacebookPhotoAlbum (album) and associate them with the tribe
     """
+    num_added = 0
+    num_deleted = 0
     try:
         fb_session, fb = get_user_fb_session(album.owner)
         
         # First see if the album on facebook has changed since we last checked
         fb_album = fb.photos.getAlbums(aids=album.aid)[0]
-        fb_album_modified = datetime.utcfromtimestamp(fb_album['modified_major'] )
+        fb_album_modified = datetime.utcfromtimestamp(fb_album['modified'] )
         if not fb_album_modified > album.modified:
-            return # no need to go any further
+            return (0,0) # no need to go any further
         
         # get list of current photos in the album from facebook
         photos = fb.photos.get(aid=album.aid)
         
         # First remove any photos that we already have but are no longer in the facebook album (user removed them)
         fbis_to_remove = album.fb_photo_images.exclude(pid__in=[photo['pid'] for photo in photos])
+        num_deleted = fbis_to_remove.count()
         for fbi in fbis_to_remove.all():
             fbi.delete() 
         
@@ -102,6 +105,7 @@ def get_new_fb_album_photos(album):
                 # create new FacebookPhotoImage model object to track this image
                 fbi = FacebookPhotoImage(pid=photo['pid'], album=album, image=im)
                 fbi.save()
+                num_added = num_added + 1
                 
         # update modified field in album 
         album.modified = fb_album_modified
@@ -111,4 +115,6 @@ def get_new_fb_album_photos(album):
         return
     except facebook.FacebookError:
         fb_session.delete()
+    
+    return (num_added, num_deleted)
     
