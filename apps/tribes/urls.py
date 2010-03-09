@@ -16,10 +16,10 @@ urlpatterns = patterns("tribes.views",
     url(r"^your_tribes/$", "your_tribes", name="your_tribes"),
     
     # tribe-specific
-    url(r"^tribe/(?P<group_slug>[-\w]+)/$", "tribe", name="tribe_detail"),
-    url(r"^tribe/(?P<group_slug>[-\w]+)/delete/$", "delete", name="tribe_delete"),
+    url(r"^tribe/(?P<tribe_slug>[-\w]+)/$", "tribe", name="tribe_detail"),
+    url(r"^tribe/(?P<tribe_slug>[-\w]+)/delete/$", "delete", name="tribe_delete"),
 )
 
 
-urlpatterns += bridge.include_urls("topics.urls", r"^tribe/(?P<group_slug>[-\w]+)/topics/")
-urlpatterns += bridge.include_urls("photos.urls", r"^tribe/(?P<group_slug>[-\w]+)/photos/")
+urlpatterns += bridge.include_urls("topics.urls", r"^tribe/(?P<tribe_slug>[-\w]+)/topics/")
+urlpatterns += bridge.include_urls("photos.urls", r"^tribe/(?P<tribe_slug>[-\w]+)/photos/")

@@ -8,19 +8,15 @@ from django.utils import simplejson
 
 from oshare.models import UserFacebookSession
 
+from tribes.utils import group_and_bridge
+
 @login_required
-def fblogin(request, group_slug=None, bridge=None):
+def fblogin(request, **kwargs):
     """
     Process facebook login success
     """
     
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
         
         
     # first remove any previous session

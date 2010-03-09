@@ -12,6 +12,7 @@ from photologue.models import *
 from tagging.fields import TagField
 
 from django.utils.translation import ugettext_lazy as _
+from groups.base import GroupAware
 
 
 
@@ -40,7 +41,7 @@ class PhotoSet(models.Model):
         verbose_name_plural = _("photo sets")
 
 
-class Image(ImageModel):
+class Image(ImageModel, GroupAware):
     """
     A photo with its details
     """
@@ -78,23 +79,13 @@ class Image(ImageModel):
     def __unicode__(self):
         return self.title
     
-    def get_absolute_url(self):
-        return reverse("photo_details", args=[self.pk])
+    def get_absolute_url(self, group=None):
+        kwargs = {"id": self.pk}
+        view_name = "photo_details"
+        # We check for attachment of a group. This way if the Image object
+        # is not attached to the group the application continues to function.
+        if group:
+            return group.content_bridge.reverse(view_name, group, kwargs)
+        return reverse(view_name, kwargs=kwargs)
 
 
-class Pool(models.Model):
-    """
-    model for a photo to be applied to an object
-    """
-    
-    photo = models.ForeignKey(Image)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    group = generic.GenericForeignKey()
-    created_at = models.DateTimeField(_("created_at"), default=datetime.now)
-    
-    class Meta:
-        # Enforce unique associations per object
-        unique_together = [("photo", "content_type", "object_id")]
-        verbose_name = _("pool")
-        verbose_name_plural = _("pools")

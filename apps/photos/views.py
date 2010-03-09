@@ -1,5 +1,6 @@
-import urllib2
 from urlparse import urlparse
+import urllib2
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -12,41 +13,33 @@ from django.http import Http404, HttpResponseRedirect, get_host
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext
-from oshare.decorators import fb_login_required
-from photos.forms import PhotoUploadForm, PhotoEditForm, FacebookPhotosForm
-from photos.models import Pool, Image
 
+from oshare.decorators import fb_login_required
+
+from photos.forms import PhotoUploadForm, PhotoEditForm, FacebookPhotosForm
+from photos.models import Image
+
+from tribes.utils import group_and_bridge
 
 @login_required
 def upload(request, form_class=PhotoUploadForm,
-        template_name="photos/upload.html", group_slug=None, bridge=None):
+        template_name="photos/upload.html", **kwargs):
     """
     upload form for photos
     """
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
-    photo_form = form_class()
+    photo_form = form_class(request.user, group)
     if request.method == "POST":
         if request.POST.get("action") == "upload":
-            photo_form = form_class(request.user, request.POST, request.FILES)
+            photo_form = form_class(request.user, group, request.POST, request.FILES)
             if photo_form.is_valid():
                 photo = photo_form.save(commit=False)
                 photo.member = request.user
-                photo.save()
-
-                # in group context we create a Pool object for it
                 if group:
-                    pool = Pool()
-                    pool.photo = photo
-                    group.associate(pool)
-                    pool.save()
+                    group.associate(photo, commit=False)
+                photo.save()
 
                 messages.add_message(request, messages.SUCCESS,
                     ugettext("Successfully uploaded photo '%s'") % photo.title
@@ -60,63 +53,54 @@ def upload(request, form_class=PhotoUploadForm,
 
                 return HttpResponseRedirect(redirect_to)
 
-    return render_to_response(template_name, {
+    return {
+        "TEMPLATE": template_name,
         "group": group,
         "photo_form": photo_form,
-    }, context_instance=RequestContext(request))
+    }
 
 
 @login_required
-def yourphotos(request, template_name="photos/yourphotos.html", group_slug=None, bridge=None):
+def yourphotos(request, template_name="photos/yourphotos.html", **kwargs):
     """
     photos for the currently authenticated user
     """
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
     photos = Image.objects.filter(member=request.user)
 
+    # filter by group
     if group:
-        photos = group.content_objects(photos, join="pool")
-    else:
-        photos = photos.filter(pool__object_id=None)
+        photos = group.content_objects(photos)
 
     photos = photos.order_by("-date_added")
 
-    return render_to_response(template_name, {
+    return {
+        "TEMPLATE": template_name,
         "group": group,
         "photos": photos,
-    }, context_instance=RequestContext(request))
+    }
 
+# TODO: write is group member decorator
 @login_required
-def photos(request, template_name="photos/latest.html", group_slug=None, bridge=None):
+def photos(request, template_name="photos/latest.html", **kwargs):
     """
     latest photos
     """
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
     photos = Image.objects.filter(
         Q(is_public=True) |
         Q(is_public=False, member=request.user)
     )
 
+    # filter by group, otherwise show only with no group set
     if group:
-        photos = group.content_objects(photos, join="pool")
+        photos = group.content_objects(photos)
     else:
-        photos = photos.filter(pool__object_id=None)
+        photos = photos.filter(object_id=None)
 
     photos = photos.order_by("-date_added")
 
@@ -128,25 +112,19 @@ def photos(request, template_name="photos/latest.html", group_slug=None, bridge=
 
 
 @login_required
-def details(request, id, template_name="photos/details.html", group_slug=None, bridge=None):
+def details(request, id, template_name="photos/details.html", **kwargs):
     """
     show the photo details
     """
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
     photos = Image.objects.all()
 
     if group:
-        photos = group.content_objects(photos, join="pool")
+        photos = group.content_objects(photos)
     else:
-        photos = photos.filter(pool__object_id=None)
+        photos = photos.filter(object_id=None)
 
     photo = get_object_or_404(photos, id=id)
 
@@ -155,78 +133,62 @@ def details(request, id, template_name="photos/details.html", group_slug=None, b
         raise Http404
 
     photo_url = photo.get_display_url()
-
-    title = photo.title
     host = "http://%s" % get_host(request)
 
-    if photo.member == request.user:
-        is_me = True
-    else:
-        is_me = False
-
-    return render_to_response(template_name, {
+    return {
+        "TEMPLATE": template_name,
         "group": group,
         "host": host,
         "photo": photo,
         "photo_url": photo_url,
-        "is_me": is_me,
-    }, context_instance=RequestContext(request))
+        "is_me": photo.member == request.user,
+    }
 
 
 @login_required
-def memberphotos(request, username, template_name="photos/memberphotos.html", group_slug=None, bridge=None):
+def memberphotos(request, username, template_name="photos/memberphotos.html", **kwargs):
     """
     Get the members photos and display them
     """
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
+    # test user exists
     user = get_object_or_404(User, username=username)
 
     photos = Image.objects.filter(
-        member__username=username,
+        member=user,
         is_public=True,
     )
 
     if group:
-        photos = group.content_objects(photos, join="pool")
+        photos = group.content_objects(photos)
     else:
-        photos = photos.filter(pool__object_id=None)
+        photos = photos.filter(object_id=None)
 
     photos = photos.order_by("-date_added")
 
-    return render_to_response(template_name, {
+    return {
+        "TEMPLATE": template_name,
         "group": group,
         "photos": photos,
-    }, context_instance=RequestContext(request))
+    }
 
 
 @login_required
 def edit(request, id, form_class=PhotoEditForm,
-        template_name="photos/edit.html", group_slug=None, bridge=None):
+        template_name="photos/edit.html", **kwargs):
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
     photos = Image.objects.all()
 
     if group:
-        photos = group.content_objects(photos, join="pool")
+        photos = group.content_objects(photos)
     else:
-        photos = photos.filter(pool__object_id=None)
+        photos = photos.filter(object_id=None)
 
-    photo = get_object_or_404(photos, id=id)
+    photo = get_object_or_404(photos, pk=id)
     photo_url = photo.get_display_url()
 
     if request.method == "POST":
@@ -264,32 +226,27 @@ def edit(request, id, form_class=PhotoEditForm,
     else:
         photo_form = form_class(instance=photo)
 
-    return render_to_response(template_name, {
+    return {
+        "TEMPLATE": template_name,
         "group": group,
         "photo_form": photo_form,
         "photo": photo,
         "photo_url": photo_url,
-    }, context_instance=RequestContext(request))
+    }
 
 @login_required
-def destroy(request, id, group_slug=None, bridge=None):
+def destroy(request, id, **kwargs):
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
 
     photos = Image.objects.all()
 
     if group:
-        photos = group.content_objects(photos, join="pool")
+        photos = group.content_objects(photos)
     else:
-        photos = photos.filter(pool__object_id=None)
+        photos = photos.filter(object_id=None)
 
-    photo = get_object_or_404(photos, id=id)
+    photo = get_object_or_404(photos, pk=id)
     title = photo.title
 
     if group:
@@ -313,19 +270,12 @@ def destroy(request, id, group_slug=None, bridge=None):
 
         
 @fb_login_required    
-def fbphotos(request,
-             template_name="photos/facebook.html", group_slug=None, bridge=None):
+def fbphotos(request, template_name="photos/facebook.html", **kwargs):
     """
     Fetch photos from facebook
     """
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    group, bridge = group_and_bridge(kwargs)
         
     fb_user = request.fb.users.getInfo(request.fb.uid)[0]
     fb_albums = [album for album in request.fb.photos.getAlbums() if album['type'] != 'profile']
@@ -354,19 +304,21 @@ def fbphotos(request,
                         if len(url) == 0:
                             url = photo['src_small']
                     if len(url) > 0:
+                        # fetch url and save it
                         img_temp = NamedTemporaryFile()
                         img_temp.write(urllib2.urlopen(url).read())
                         img_temp.flush()
                         name = urlparse(url).path.split('/')[-1]
-                        im = Image(title=title, caption=photo['caption'])
-                        im.member = request.user;
-                        im.image.save(name, File(img_temp))
-                        # in group context we create a Pool object for it
+                        
+                        # create image
+                        im = Image(
+                            title = title, 
+                            caption = photo['caption'],
+                            member = request.user,
+                        )
                         if group:
-                            pool = Pool()
-                            pool.photo = im
-                            group.associate(pool)
-                            pool.save()
+                            group.associate(im)
+                        im.image.save(name, File(img_temp))
             if group:
                 redirect_to = bridge.reverse("photos", group)
             else:
@@ -375,10 +327,11 @@ def fbphotos(request,
  
     albums_form = FacebookPhotosForm(objects=albums)
 
-    return render_to_response(template_name, {
+    return {
+        "TEMPLATE": template_name,
         "group": group,
         "fb_user": fb_user,
         "fb_albums": albums,
         "fb_form" : albums_form,
-        }, context_instance=RequestContext(request))
+    }
 
