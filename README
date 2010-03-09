@@ -38,7 +38,3 @@ TODO: remove this line, freeze requirements and store them locally in our requir
 > pip install --no-deps --requirement lib/pinax/requirements/external_apps.txt
 > pip install --no-deps -r requirements.txt
 
-TODO LIST:
- * fork mailer on github, fix with new lockfile.py, tell requirements.txt to use fork
- * same above but for notifications, fork version should rely on lockfile being installed
- * fix models.py in photos in pinax and push
