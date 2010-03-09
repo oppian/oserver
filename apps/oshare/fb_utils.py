@@ -41,7 +41,6 @@ def add_or_remove_fb_albums(user, tribe=None, albums=[]):
         user_fb_albums = tribe.content_objects(user_fb_albums)
     albums_to_remove = user_fb_albums.exclude(aid__in=[album['aid'] for album in albums])
     for album in albums_to_remove:
-        # TODO: cascade remove all FacebookPhotoImage.image associations with the tribe 
         album.delete()
         
     # associate new albums with the tribe
@@ -74,8 +73,7 @@ def get_new_fb_album_photos(album):
         # First remove any photos that we already have but are no longer in the facebook album (user removed them)
         fbis_to_remove = album.fb_photo_images.exclude(pid__in=[photo['pid'] for photo in photos])
         for fbi in fbis_to_remove.all():
-            fbi.im.delete()
-            fbi.delete() # TODO: do we have to call fbi.image.delete() or does this cascade?
+            fbi.delete() 
         
         # get list of pids we already know about for this album
         existing_pids = album.fb_photo_images.values_list('pid', flat=True)
