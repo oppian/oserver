@@ -6,6 +6,7 @@ site_media/media/photologue
 .DS_Store
 .pydevproject
 .settings
+settings_local.py
 .project
 templates/VERSION.txt
 pip-log.txt
