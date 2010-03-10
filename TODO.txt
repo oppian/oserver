@@ -1,6 +1,8 @@
 TODO LIST
 =========
 
+* fix broken file upload
+
 # TODO: tribe invite
 
 # TODO: fork mailer on github, fix with new lockfile.py, tell requirements.txt to use fork
