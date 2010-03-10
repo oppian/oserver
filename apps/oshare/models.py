@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from django.db import models
@@ -47,6 +46,3 @@ class FacebookPhotoImage(models.Model):
     
     def __unicode__(self):
         return '%s : %s' % (self.pid, self.image)
-    
-    
-    

@@ -273,8 +273,8 @@ FIXTURE_DIRS = (
 # FACEBOOK
 
 # Facebook Connect application settings
-FACEBOOK_API_KEY = '58da47aefc7150717424b6dfb3cb3b1b'
-FACEBOOK_SECRET_KEY = 'b5b94bc1fa8507734b72ff88ffd13e6a'
+FACEBOOK_API_KEY = '5286e2eb12912b1e414d1cf5c7146c45'
+FACEBOOK_SECRET_KEY = 'd2927325bd8853191ca6d2438fb41492'
 
 # AWS
 AWS_ACCESS_KEY_ID = '1EZPW78HVZMFXZXJXAR2'
@@ -304,3 +304,4 @@ try:
     from settings_local import *
 except ImportError:
     pass
+
