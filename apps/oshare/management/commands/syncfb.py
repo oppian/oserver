@@ -15,8 +15,10 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         for album in FacebookPhotoAlbum.objects.all():
-            num_added, num_deleted = get_new_fb_album_photos(album)
+            num_added, num_deleted, num_modifed = get_new_fb_album_photos(album)
             if num_added:
                 print 'Imported %d photos from album: %s for user: %s' % (num_added, album, album.owner)
             if num_deleted:
                 print 'Deleted %d photos from album: %s for user: %s' % (num_deleted, album, album.owner)
+            if num_modifed:
+                print 'Modified %d photos from album: %s for user: %s' % (num_modifed, album, album.owner)

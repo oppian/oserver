@@ -31,7 +31,7 @@ class FacebookPhotoAlbum(GroupAware):
     """
     aid = models.CharField(max_length=32, db_index=True)
     name = models.TextField(blank=True)
-    modified = models.DateTimeField(default=datetime.min) # actually maps to modified_major in FQL
+    modified = models.DateTimeField(default=datetime.min)
     owner = models.ForeignKey(User) # django user, not fb FQL owner
     
     def __unicode__(self):
@@ -42,6 +42,7 @@ class FacebookPhotoImage(models.Model):
     Represents Image model instances that originate from Facebook album photos
     """
     pid = models.CharField(max_length=32, db_index=True)
+    modified = models.DateTimeField(default=datetime.min)
     album = models.ForeignKey(FacebookPhotoAlbum, related_name='fb_photo_images')
     image = models.OneToOneField(Image)
     

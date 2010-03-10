@@ -5,8 +5,8 @@ Created on Mar 8, 2010
 '''
 
 from datetime import datetime
-import urllib2
-from urlparse import urlparse
+import urllib2 #@UnresolvedImport - Shuts PyDev up
+from urlparse import urlparse #@UnresolvedImport - Shuts PyDev up
 
 import facebook
 
@@ -60,14 +60,15 @@ def get_new_fb_album_photos(album):
     """
     num_added = 0
     num_deleted = 0
+    num_modified = 0
     try:
         fb_session, fb = get_user_fb_session(album.owner)
         
         # First see if the album on facebook has changed since we last checked
         fb_album = fb.photos.getAlbums(aids=album.aid)[0]
-        fb_album_modified = datetime.utcfromtimestamp(fb_album['modified'] )
+        fb_album_modified = datetime.utcfromtimestamp(fb_album['modified'])
         if not fb_album_modified > album.modified:
-            return (0,0) # no need to go any further
+            return (0,0,0) # no need to go any further
         
         # get list of current photos in the album from facebook
         photos = fb.photos.get(aid=album.aid)
@@ -78,12 +79,20 @@ def get_new_fb_album_photos(album):
         for fbi in fbis_to_remove.all():
             fbi.delete() 
         
-        # get list of pids we already know about for this album
+        # get list of facebook images we already know about for this album
+        existing_fbis = album.fb_photo_images.all().select_related()
         existing_pids = album.fb_photo_images.values_list('pid', flat=True)
         # Now add any new photos
         for photo in photos:
-            if photo['pid'] in existing_pids:
-                continue # we already have this photo imported
+            fbi = None
+            pid = photo['pid']
+            fb_image_modified = datetime.utcfromtimestamp(photo['modified'])
+            if pid in existing_pids: 
+                # we already have this photo imported, look it up
+                fbi = existing_fbis.get(pid=pid)
+                # See if it has been modified since we imported it
+                if not fb_image_modified > fbi.modified:
+                    continue # this image hasn't changed since we imported it
             # import photo
             url = photo['src_big']
             if len(url) == 0:
@@ -95,23 +104,30 @@ def get_new_fb_album_photos(album):
                 img_temp.write(urllib2.urlopen(url).read())
                 img_temp.flush()
                 name = urlparse(url).path.split('/')[-1]
-                im = Image(title=photo['pid'], caption=photo['caption'], member=album.owner)
-                
-                album.group.associate(im)
-                im.image.save(name, File(img_temp))
-                # create new FacebookPhotoImage model object to track this image
-                fbi = FacebookPhotoImage(pid=photo['pid'], album=album, image=im)
+                if fbi:
+                    # Updating existing image
+                    fbi.modified = fb_image_modified
+                    fbi.image.caption = photo['caption']
+                    fbi.image.image.save(name, File(img_temp))
+                    num_modified = num_modified + 1
+                else:
+                    # Importing new image
+                    im = Image(title=pid, caption=photo['caption'], member=album.owner)
+                    album.group.associate(im)
+                    im.image.save(name, File(img_temp))
+                    # create new FacebookPhotoImage model object to track this image
+                    fbi = FacebookPhotoImage(pid=pid, modified=fb_image_modified, album=album, image=im)
+                    num_added = num_added + 1
                 fbi.save()
-                num_added = num_added + 1
                 
         # update modified field in album 
         album.modified = fb_album_modified
         album.save()
                 
-    except UserFacebookSession.DoesNotExist:
+    except UserFacebookSession.DoesNotExist: #@UndefinedVariable - shuts PyDev up
         return
     except facebook.FacebookError:
         fb_session.delete()
     
-    return (num_added, num_deleted)
+    return (num_added, num_deleted, num_modified)
     
