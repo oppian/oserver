@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## Post hook setup script
+
 # vars used
 DB_USER=oppster
 DB_NAME=oppster
@@ -9,8 +11,6 @@ HOSTNAME=oppster.oppian.com
 # deploy should be first argument
 DEPLOY_DIR=$1
 cd $DEPLOY_DIR
-
-## Post hook setup script
 
 ## postgresql
 
