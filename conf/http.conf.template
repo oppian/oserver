@@ -1,0 +1,37 @@
+KeepAlive Off
+
+
+<Macro Static $url>
+		<Location "$url">
+			SetHandler None
+			Order allow,deny
+			Allow from all
+		</Location>
+</Macro>
+
+
+<VirtualHost *:80>
+
+    ServerName @HOSTNAME@
+
+    ServerAdmin admin@oppian.com
+    
+    CustomLog @DEPLOY_DIR@/access.log combined
+    ErrorLog @DEPLOY_DIR@/apache2/error.log
+    LogLevel warn
+    
+    <Location "/">
+        SetHandler python-program
+        PythonHandler deploy.modpython
+        SetEnv DJANGO_SETTINGS_MODULE settings
+        PythonDebug On
+        PythonPath "['@DEPLOY_DIR@'] + sys.path"
+    </Location>
+    
+    Alias /site_media @DEPLOY_DIR@/site_media
+    Use Static /site_media
+    
+    Alias /favicon.ico @DEPLOY_DIR@/media/images/favicon.ico
+    Use Static /favicon.ico
+
+</VirtualHost>
