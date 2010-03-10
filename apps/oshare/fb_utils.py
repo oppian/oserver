@@ -86,9 +86,6 @@ def get_new_fb_album_photos(album):
                 continue # we already have this photo imported
             # import photo
             url = photo['src_big']
-            title = photo['caption']
-            if not title:
-                title = photo['pid']
             if len(url) == 0:
                 url = photo['src']
                 if len(url) == 0:
@@ -98,7 +95,7 @@ def get_new_fb_album_photos(album):
                 img_temp.write(urllib2.urlopen(url).read())
                 img_temp.flush()
                 name = urlparse(url).path.split('/')[-1]
-                im = Image(title=title, caption=photo['caption'], member=album.owner)
+                im = Image(title=photo['pid'], caption=photo['caption'], member=album.owner)
                 
                 album.group.associate(im)
                 im.image.save(name, File(img_temp))
