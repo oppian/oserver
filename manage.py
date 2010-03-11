@@ -19,7 +19,7 @@ except ImportError:
     sys.exit(1)
 
 # setup the environment before we start accessing things in the settings.
-setup_environ(settings_mod)
+setup_environ(settings_mod, 'settings')
 
 sys.path.insert(0, join(settings.PINAX_ROOT, "apps"))
 sys.path.insert(0, join(settings.PROJECT_ROOT, "apps"))
