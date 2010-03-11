@@ -31,7 +31,7 @@ def upload(request, form_class=PhotoUploadForm,
     photo_form = form_class(request.user, group)
     if request.method == "POST":
         if request.POST.get("action") == "upload":
-            photo_form = form_class(request.user, group, request.POST, request.FILES)
+            photo_form = form_class(user=request.user, group=group, data=request.POST, files=request.FILES)
             if photo_form.is_valid():
                 photo = photo_form.save(commit=False)
                 photo.member = request.user

@@ -23,7 +23,7 @@ class PhotoUploadForm(GroupForm):
         
     def clean(self):
         self.check_group_membership()
-        return self.cleaned_data
+        return super(PhotoUploadForm, self).clean()
     
 
 
