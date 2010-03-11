@@ -25,4 +25,4 @@ TODO LIST
 
  * make photo title if not given use filename
  
- test2
+ * fix build server first boot ssh known keys
