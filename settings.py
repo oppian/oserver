@@ -116,7 +116,7 @@ MIDDLEWARE_CLASSES = [
     'oshare.middleware.DualFormatMiddleware',
 ]
 
-ROOT_URLCONF = "oserver.urls"
+ROOT_URLCONF = "urls"
 
 TEMPLATE_DIRS = [
     os.path.join(PROJECT_ROOT, "templates"),
