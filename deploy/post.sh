@@ -76,8 +76,8 @@ chown -R www-data $DEPLOY_DIR
 ## apache
 
 # rewrite config
-sed -e 's/@DEPLOY_DIR@/$DEPLOY_DIR/g' -e 's/@HOSTNAME@/$HOSTNAME/g' $DEPLOY_DIR/conf/http.conf.template > $DEPLOY_DIR/conf/http.conf
-sed -e 's/@DEPLOY_DIR@/$DEPLOY_DIR/g' -e 's/@HOSTNAME@/$HOSTNAME/g' $DEPLOY_DIR/deploy/modpython.py.template > $DEPLOY_DIR/deploy/modpython.py
+sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" -e "s|@HOSTNAME@|$HOSTNAME|g" $DEPLOY_DIR/conf/http.conf.template > $DEPLOY_DIR/conf/http.conf
+sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" -e "s|@HOSTNAME@|$HOSTNAME|g" $DEPLOY_DIR/deploy/modpython.py.template > $DEPLOY_DIR/deploy/modpython.py
 
 
 echo "Linking to apache config..."
