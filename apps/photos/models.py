@@ -50,7 +50,7 @@ class Image(ImageModel, GroupAware):
         (1, _("Safe")),
         (2, _("Not Safe")),
     )
-    title = models.CharField(_("title"), max_length=200)
+    title = models.CharField(_("title"), max_length=255)
     title_slug = models.SlugField(_("slug"))
     caption = models.TextField(_("caption"), blank=True)
     date_added = models.DateTimeField(_("date added"),
