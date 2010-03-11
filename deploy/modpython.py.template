@@ -5,7 +5,7 @@ from os.path import abspath, dirname, join
 from site import addsitedir
 
 # activate virtualenv
-VIRTUALENV_BASE = "@DEPLOY_DIR@"
+VIRTUALENV_BASE = "@DEPLOY_DIR@/pinax-env"
 if not VIRTUALENV_BASE:
     raise Exception("VIRTUALENV_BASE is not set correctly.")
 
