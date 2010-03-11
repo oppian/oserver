@@ -71,6 +71,7 @@ done
 
 # make chronograph.sh exec
 chmod +x deploy/chronograph.sh
+chown root deploy/chronograph.sh
 
 ## chown of files
 chown -R www-data $DEPLOY_DIR
