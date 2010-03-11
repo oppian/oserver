@@ -71,11 +71,13 @@ done
 
 # make chronograph.sh exec
 chmod +x deploy/chronograph.sh
-chown root deploy/chronograph.sh
 
-## chown of files
+
+## chown of files to allow media and writing of pyc files
 chown -R www-data $DEPLOY_DIR
 
+## cron needs to be owned root
+chown root deploy/chronograph.sh
 
 ## apache
 
