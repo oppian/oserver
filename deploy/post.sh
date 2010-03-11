@@ -65,7 +65,7 @@ python manage.py syncdb --noinput
 sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" $DEPLOY_DIR/conf/cron.template > $DEPLOY_DIR/cron.d/chronograph
 echo "Linking cron files..."
 for CFILE in $DEPLOY_DIR/cron.d/* ; do
-  echo "Linking $CFILE..."
+  echo "Copying $CFILE..."
   ln -s -f $CFILE /etc/cron.d/
 done
 
@@ -77,7 +77,7 @@ chmod +x deploy/chronograph.sh
 chown -R www-data $DEPLOY_DIR
 
 ## cron needs to be owned root
-chown root deploy/chronograph.sh
+chown root cron.d/chronograph
 
 ## apache
 
