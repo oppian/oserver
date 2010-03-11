@@ -24,3 +24,5 @@ TODO LIST
 # TODO: style multiselect widget to look like photologue style
 
  * make photo title if not given use filename
+ 
+ test
