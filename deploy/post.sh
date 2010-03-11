@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 ## Post hook setup script
 
@@ -18,10 +18,10 @@ echo "Setting up database..."
 
 
 # drop db
-sudo -u postgres dropdb $DB_NAME
+(sudo -u postgres dropdb $DB_NAME)
 
 # drop dbuser if exists
-sudo -u postgres dropuser $DB_USER
+(sudo -u postgres dropuser $DB_USER)
 
 # create dbuser (note: done this way instead of createuser as you can put a password in)
 sudo -u postgres psql postgres <<EOF
@@ -41,7 +41,6 @@ DJANGO_VERSION=1.2.dev12229
 
 # bootstrap virtualenv
 echo "Setting up virtualenv..."
-pwd
 python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-env  --django-version=$DJANGO_VERSION
 
 # activate it
@@ -59,12 +58,13 @@ python manage.py build_static --noinput
 
 # syncdb
 echo "Create database models..."
-python /manage.py syncdb --noinput
+python manage.py syncdb --noinput
 
 
 ## cron setup
+sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" $DEPLOY_DIR/conf/cron.template > $DEPLOY_DIR/cron.d/chronograph
 echo "Linking cron files..."
-for CFILE in "$DEPLOY_DIR/cron.d/*" ; do
+for CFILE in $DEPLOY_DIR/cron.d/* ; do
   echo "Linking $CFILE..."
   ln -s -f $CFILE /etc/cron.d/
 done
