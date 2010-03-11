@@ -17,7 +17,7 @@ KeepAlive Off
     ServerAdmin admin@oppian.com
     
     CustomLog @DEPLOY_DIR@/access.log combined
-    ErrorLog @DEPLOY_DIR@/apache2/error.log
+    ErrorLog @DEPLOY_DIR@/error.log
     LogLevel warn
     
     <Location "/">
