@@ -69,6 +69,9 @@ for CFILE in $DEPLOY_DIR/cron.d/* ; do
   ln -s -f $CFILE /etc/cron.d/
 done
 
+# make chronograph.sh exec
+chmod +x deploy/chronograph.sh
+
 ## chown of files
 chown -R www-data $DEPLOY_DIR
 
