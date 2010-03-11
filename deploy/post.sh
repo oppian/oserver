@@ -75,6 +75,12 @@ chown -R www-data $DEPLOY_DIR
 
 ## apache
 
+## enable macro mod
+a2enmod macro
+
+## enable rewrite mod
+a2enmod rewrite
+
 # rewrite config
 sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" -e "s|@HOSTNAME@|$HOSTNAME|g" $DEPLOY_DIR/conf/http.conf.template > $DEPLOY_DIR/conf/http.conf
 sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" -e "s|@HOSTNAME@|$HOSTNAME|g" $DEPLOY_DIR/deploy/modpython.py.template > $DEPLOY_DIR/deploy/modpython.py
@@ -85,4 +91,6 @@ ln -s -f $DEPLOY_DIR/conf/http.conf /etc/apache2/sites-available/oserver
 a2ensite oserver
 
 echo "Restarting apache..."
-/etc/init.d/apache2 restart
+apache2ctl configtest
+apache2ctl restart
+
