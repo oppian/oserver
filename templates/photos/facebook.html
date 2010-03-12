@@ -11,7 +11,7 @@
 <script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
 
 <script type="text/javascript">
-FB.init("{{ fb_api_key }}", "{{ STATIC_URL }}xd_receiver.htm"); 
+FB.init("{{ fb_api_key }}", "{{ STATIC_URL }}facebook/xd_receiver.htm"); 
 function fblogout()
 {
 	FB.ensureInit(function() { FB.Connect.logoutAndRedirect('{{ fb_logout_url }}'); });
