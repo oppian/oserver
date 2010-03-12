@@ -2,11 +2,15 @@
 
 ## Post hook setup script
 
+# set up the http proxy
+export http_proxy=http://localhost:8123/
+
 # vars used
 DB_USER=oppster
 DB_NAME=oppster
 DB_PASS=mented73
 HOSTNAME=oppster.oppian.com
+FIXTURE_FILE=testdata
 
 # deploy should be first argument
 DEPLOY_DIR=$1
@@ -60,6 +64,10 @@ python manage.py build_static --noinput
 echo "Create database models..."
 python manage.py syncdb --noinput
 
+## add extra fixture data if set
+if [ $FIXTURE_FILE ]; then
+  python manage.py loaddata $FIXTURE_FILE
+fi
 
 ## cron setup
 sed -e "s|@DEPLOY_DIR@|$DEPLOY_DIR|g" $DEPLOY_DIR/conf/cron.template > $DEPLOY_DIR/cron.d/chronograph
