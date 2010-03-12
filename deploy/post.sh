@@ -2,9 +2,6 @@
 
 ## Post hook setup script
 
-# set up the http proxy
-export http_proxy=http://localhost:8123/
-
 # vars used
 DB_USER=oppster
 DB_NAME=oppster
@@ -15,6 +12,9 @@ FIXTURE_FILE=testdata
 # deploy should be first argument
 DEPLOY_DIR=$1
 cd $DEPLOY_DIR
+
+# set up the http proxy
+export http_proxy=http://localhost:8123/
 
 ## postgresql
 
@@ -51,7 +51,7 @@ python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-en
 source pinax-env/bin/activate
 
 # install requirements
-pip install --no-deps --requirement requirements.txt
+pip install --no-deps --requirement requirements.txt --proxy=$http_proxy
 
 
 ## django/pinax setup
