@@ -4,14 +4,32 @@
 {% load uni_form_tags %}
 {% load group_tags %}
 
-{% block head_title %}{% blocktrans %}Fetch your photos from Facebook{% endblocktrans %}{% endblock %}
+
+{% block head_title %}{% blocktrans %}Sync your photos with your Facebook account{% endblocktrans %}{% endblock %}
 
 {% block body %}
+<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script>
+
+<script type="text/javascript">
+FB.init("{{ fb_api_key }}", "{{ STATIC_URL }}facebook/xd_receiver.htm"); 
+function fblogout()
+{
+	FB.ensureInit(function() { FB.Connect.logoutAndRedirect('{{ fb_logout_url }}'); });
+}
+</script>
+
 <h2>Welcome {{ fb_user.name }}</h2>
-<h3>Photo Albums</h3>
+<p>Not {{ fb_user.name }}? Or want to use a different Facebook account? Click <a href="#" onclick="fblogout()">here</a></p>
+<h3>Your photo albums:</h3>
+<ul>
+<li>Select your photo albums from Facebook that you wish to share with the tribe</li>
+<li>Deselecting existing shared albums will remove those photos from the tribe</li>
+<li>Oppster will continue to monitor the selected albums on Facebook for new or removed photos</li>
+</ul>. 
 <form action="{% groupurl photo_fbphotos group %}" method="POST">{% csrf_token %}
 {{ fb_form.as_p }}
-<input type="submit", name="submit", value="Import", id="submit"/>
+<br/>
+<input type="submit", name="submit", value="Sync", id="submit"/>
 </form>
 
 {% endblock %}

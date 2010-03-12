@@ -23,4 +23,6 @@ TODO LIST
 
 # TODO: style multiselect widget to look like photologue style
 
- * make photo title if not given use filename
+ * setup pypi on the download server and use it for the libs
+ 
+ * change build processes to run as non-root

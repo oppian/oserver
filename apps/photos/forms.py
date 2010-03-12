@@ -11,9 +11,16 @@ from django.forms.models import ModelForm
 
 class PhotoUploadForm(GroupForm):
     
+    title = forms.CharField(required=False)
+    
     class Meta:
         model = Image
         exclude = ["member", "photoset", "title_slug", "effect", "crop_from", 'group_content_type', 'group_object_id']
+        
+    def clean_title(self):
+        if not self.cleaned_data["title"]:
+            self.cleaned_data["title"] = self.cleaned_data["image"].name
+        return self.cleaned_data["title"]
         
     def clean_image(self):
         if "#" in self.cleaned_data["image"].name:

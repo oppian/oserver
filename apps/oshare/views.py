@@ -1,29 +1,21 @@
 # Create your views here.
 
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.utils import simplejson
 
 from oshare.models import UserFacebookSession
-
-from tribes.utils import group_and_bridge
 
 @login_required
 def fblogin(request, **kwargs):
     """
     Process facebook login success
-    """
-    
-    group, bridge = group_and_bridge(kwargs)
-        
-        
+    """  
     # first remove any previous session
     try:
         fb_session = request.user.userfacebooksession; # reverse of OneToOneField
         fb_session.delete()
-    except UserFacebookSession.DoesNotExist:
+    except UserFacebookSession.DoesNotExist: #@UndefinedVariable
         pass
     
     next_view = request.GET.get('nextview', '/')
@@ -36,5 +28,22 @@ def fblogin(request, **kwargs):
     fb_user_session.user = request.user
     fb_user_session.save()
     
+    return HttpResponseRedirect(next_view)
+
+@login_required
+def fblogout(request, **kwargs):
+    """
+    Process facebook logout
+    """
+        
+    # first remove any previous session
+    try:
+        fb_session = request.user.userfacebooksession; # reverse of OneToOneField
+        fb_session.delete()
+    except UserFacebookSession.DoesNotExist: #@UndefinedVariable
+        pass
+    
+    # Now redirect to next view
+    next_view = request.GET.get('nextview', '/')
     return HttpResponseRedirect(next_view)
 

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -304,11 +305,17 @@ def fbphotos(request, template_name="photos/facebook.html", **kwargs):
         user_fb_albums = group.content_objects(user_fb_albums)
     albums_form = FacebookPhotosForm(objects=fb_albums, initial=user_fb_albums.values_list('aid', flat=True))
 
+    # provide a url for facebook logout. 
+    fb_logout_url = '%s?nextview=%s' % (request.build_absolute_uri(reverse("oshare_fblogout")), request.get_full_path())
+    # facebook js init crossdomain setup url
+       
     return {
         "TEMPLATE": template_name,
         "group": group,
         "fb_user": fb_user,
         "fb_albums": fb_albums,
         "fb_form" : albums_form,
+        "fb_logout_url": fb_logout_url,
+        "fb_api_key": settings.FACEBOOK_API_KEY,
     }
 
