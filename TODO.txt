@@ -3,10 +3,6 @@ TODO LIST
 
 # TODO: tribe invite
 
-# TODO: fork mailer on github, fix with new lockfile.py, tell requirements.txt to use fork
-
-# TODO: same above but for notifications, fork version should rely on lockfile being installed
-
 # TODO: fix models.py in photos in pinax and push, group needs to be group not content_object
 
 # TODO: fix get_group kwargs in all views in pinax, group_and_bridge, tribe/group_slug
@@ -26,3 +22,6 @@ TODO LIST
  * setup pypi on the download server and use it for the libs
  
  * change build processes to run as non-root
+ 
+ * 2 builders, oppster and oppster-dev
+ 
