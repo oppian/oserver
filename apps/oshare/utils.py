@@ -13,6 +13,8 @@ from django.utils.encoding import force_unicode
 from django.utils.functional import Promise
 import datetime
 from django.db.models.fields.files import FieldFile
+from django import forms
+
 
 def json_encode(data):
     """
@@ -55,6 +57,8 @@ def json_encode(data):
         elif isinstance(data, FieldFile):
             # encode filefield as url
             ret = data.url
+        elif isinstance(data, forms.Form):
+            ret = None
         elif isinstance(data, ModelState):
             ret = None
         elif callable(data):
