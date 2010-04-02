@@ -2,10 +2,9 @@ import os
 import sys
 
 from os.path import abspath, dirname, join
-from site import addsitedir
 
 # activate virtualenv
-VIRTUALENV_BASE = "/sites/oserver/pinax-env"
+VIRTUALENV_BASE = abspath(join(dirname(__file__), '../pinax-env'))
 if not VIRTUALENV_BASE:
     raise Exception("VIRTUALENV_BASE is not set correctly.")
 

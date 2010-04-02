@@ -40,7 +40,7 @@ def group_context(group, bridge):
 
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
+
 def login(request, **kwargs):
     
     form_class = kwargs.pop("form_class", LoginForm)
@@ -67,14 +67,19 @@ def login(request, **kwargs):
                         user=form.user, openid=openid.openid
                     )
                 success_url = openid_success_url or success_url
-            messages.add_message(request, messages.SUCCESS,
-                ugettext(u"Successfully logged in as %(user)s.") % {
+            message = ugettext(u"Successfully logged in as %(user)s.") % {
                     "user": user_display(form.user)
                 }
-            )
+            messages.add_message(request, messages.SUCCESS, message)
+            extra_context['message']=message
             if success_url is None:
                 success_url = get_default_redirect(request, redirect_field_name)
+            if request.is_ajax():
+                extra_context['TEMPLATE']=""
+                return extra_context
             return HttpResponseRedirect(success_url)
+        else:
+            extra_context['message']='Login failed'
     else:
         form = form_class(group=group)
     
@@ -84,10 +89,11 @@ def login(request, **kwargs):
         "url_required": url_required,
         "redirect_field_name": redirect_field_name,
         "redirect_field_value": request.GET.get(redirect_field_name),
+        "TEMPLATE": template_name,
     })
     ctx.update(extra_context)
     
-    return render_to_response(template_name, RequestContext(request, ctx))
+    return ctx
 
 
 def signup(request, **kwargs):

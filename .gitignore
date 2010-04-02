@@ -1,5 +1,5 @@
 *.pyc
-pinax-dev
+pinax-env
 dev.db
 site_media/media/photologue
 .settings/org.eclipse.core.resource.prefs

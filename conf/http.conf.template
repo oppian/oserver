@@ -1,23 +1,13 @@
 KeepAlive Off
 
-
-<Macro Static $url>
-		<Location "$url">
-			SetHandler None
-			Order allow,deny
-			Allow from all
-		</Location>
-</Macro>
-
-
 <VirtualHost *:80>
 
-    ServerName @HOSTNAME@
+    ServerName $SITE_DOMAIN
 
     ServerAdmin admin@oppian.com
     
-    CustomLog @DEPLOY_DIR@/access.log combined
-    ErrorLog @DEPLOY_DIR@/error.log
+    CustomLog ${DEPLOY_DIR}/access.log combined
+    ErrorLog ${DEPLOY_DIR}/error.log
     LogLevel warn
     
     <Location "/">
@@ -25,13 +15,21 @@ KeepAlive Off
         PythonHandler deploy.modpython
         SetEnv DJANGO_SETTINGS_MODULE settings
         PythonDebug On
-        PythonPath "['@DEPLOY_DIR@'] + sys.path"
+        PythonPath "['$DEPLOY_DIR'] + sys.path"
     </Location>
     
-    Alias /site_media @DEPLOY_DIR@/site_media
-    Use Static /site_media
+    Alias /site_media ${DEPLOY_DIR}/site_media
+    <Location /site_media>
+        SetHandler None
+        Order allow,deny
+        Allow from all
+    </Location>
     
-    Alias /favicon.ico @DEPLOY_DIR@/media/images/favicon.ico
-    Use Static /favicon.ico
+    Alias /favicon.ico ${DEPLOY_DIR}/media/images/favicon.ico
+    <Location /favicon.ico>
+        SetHandler None
+        Order allow,deny
+        Allow from all
+    </Location>
 
 </VirtualHost>
