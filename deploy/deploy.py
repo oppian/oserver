@@ -30,13 +30,24 @@ import sys
 import pwd
 import shutil
 
+class ProcessException(Exception):
+    def __init__(self, cmd, retcode):
+        self.retcode = retcode
+        self.cmd = ' '.join(cmd)
+    def __str__(self):
+        return "%s return ERROR CODE %s" % (self.cmd, self.retcode)
+
+
 def _popen(cmd, **kwargs):
     print ' '.join(cmd)
     return subprocess.Popen(cmd, **kwargs)
 
 def _pcall(cmd, **kwargs):
     print ' '.join(cmd)
-    return subprocess.call(cmd, **kwargs)
+    retcode = subprocess.call(cmd, **kwargs)
+    if retcode:
+        raise ProcessException(cmd, retcode)
+    return retcode
 
 def _getenv(name):
     try:
@@ -115,10 +126,16 @@ def do_database():
         # update the .pgpass file
         _update_pgpass(DB_HOST, DB_NAME, DB_USER, DB_PASS)
         # drop db: sudo -u postgres dropdb $DB_NAME
-        _pcall(['sudo', '-u', 'postgres', 'dropdb', DB_NAME], stderr=open('/dev/null', 'w'))
+        try:
+            _pcall(['sudo', '-u', 'postgres', 'dropdb', DB_NAME], stderr=open('/dev/null', 'w'))
+        except:
+            pass
 
         # drop db user: sudo -u postgres dropuser $DB_USER
-        _pcall(['sudo', '-u', 'postgres', 'dropuser', DB_USER], stderr=open('/dev/null', 'w'))
+        try:
+            _pcall(['sudo', '-u', 'postgres', 'dropuser', DB_USER], stderr=open('/dev/null', 'w'))
+        except:
+            pass
 
         # create user: sudo -u postgres psql postgres
         p = _popen(['sudo', '-u', 'postgres', 'psql'], stdin=subprocess.PIPE)
