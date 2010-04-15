@@ -222,9 +222,13 @@ def do_django(deploy_dir):
     
     DB_MIGRATE = eval(os.environ.get('DB_MIGRATE', 'False'))
     if DB_MIGRATE:
+        # run custom migrate script
         if os.path.isfile(os.path.join(deploy_dir, 'deploy/db_migrate.sh')):
             os.chmod(os.path.join(deploy_dir, 'deploy/db_migrate.sh'), 0775)
             _pcall([os.path.join(deploy_dir, 'deploy/db_migrate.sh'),])
+    else:
+        # run generic migrate: python manage.py migrate --all -v 2
+        _pcall(['python', 'manage.py', 'migrate', '--all', '-v', '2'])
             
     # fixtures
     try:
