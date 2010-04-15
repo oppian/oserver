@@ -55,6 +55,18 @@
             "user": 2, 
             "uid": "100000851380201"
         }
+    },
+    {
+        "pk": 1, 
+        "model": "oshare.facebookphotoalbum", 
+        "fields": {
+            "name": "Team_Photos", 
+            "group_content_type": 42, 
+            "group_object_id": 1, 
+            "modified": "2010-03-10 15:16:14", 
+            "owner": 2, 
+            "aid": "100000851380201_624"
+        }
     }, 
     {
         "pk": 2, 
@@ -75,3 +87,4 @@
         }
     }
 ]
+
