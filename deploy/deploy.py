@@ -35,7 +35,7 @@ class ProcessException(Exception):
         self.retcode = retcode
         self.cmd = ' '.join(cmd)
     def __str__(self):
-        return "%s return ERROR CODE %s" % (self.cmd, self.retcode)
+        return "%s returned ERROR: %s" % (self.cmd, self.retcode)
 
 
 def _popen(cmd, **kwargs):
