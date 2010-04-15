@@ -50,8 +50,8 @@
         "pk": 1, 
         "model": "oshare.userfacebooksession", 
         "fields": {
-            "secret": "d9c2e469c136e6c8c03e82be1616b7d5", 
-            "session_key": "c132c6315b10afabf431ce85-100000851380201", 
+            "secret": "202a78216d8f6fd8bcddf02319672887", 
+            "session_key": "5329a8e4dfb73ef5b1bfe25d-100000851380201", 
             "user": 2, 
             "uid": "100000851380201"
         }
