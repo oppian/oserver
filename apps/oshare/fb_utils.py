@@ -62,6 +62,7 @@ def get_new_fb_album_photos(album):
     num_deleted = 0
     num_modified = 0
     try:
+        print album.owner
         fb_session, fb = get_user_fb_session(album.owner)
         
         # First see if the album on facebook has changed since we last checked
@@ -125,7 +126,8 @@ def get_new_fb_album_photos(album):
         album.save()
                 
     except UserFacebookSession.DoesNotExist: #@UndefinedVariable - shuts PyDev up
-        return
+        print "UserFacebookSession.DoesNotExist for %s" % album.owner
+        return (0,0,0)
     except facebook.FacebookError:
         fb_session.delete()
     
