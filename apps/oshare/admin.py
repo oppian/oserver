@@ -9,3 +9,4 @@ class UserFacebookSessionAdmin(admin.ModelAdmin):
 
  
 admin.site.register(UserFacebookSession, UserFacebookSessionAdmin)
+

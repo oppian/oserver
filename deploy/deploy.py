@@ -7,12 +7,17 @@ ENV:
  * DB_USER
  * DB_PASS
  * DB_NAME
+ * DB_HOST
  * DB_SETUP
  * SITE_DOMAIN
  * DEBUG
  * APACHE_USER
  * APACHE_CONF
  * FIXTURE_FILE (optional)
+ * DB_COPY_USER (optional)
+ * DB_COPY_PASS (optional)
+ * DB_COPY_NAME (optional)
+ * DB_COPY_HOST (optional)
 '''
 
 DJANGO_VERSION = "1.2.dev12229"
@@ -24,6 +29,14 @@ import subprocess
 import sys
 import pwd
 import shutil
+
+def _popen(cmd, **kwargs):
+    print ' '.join(cmd)
+    return subprocess.Popen(cmd, **kwargs)
+
+def _pcall(cmd, **kwargs):
+    print ' '.join(cmd)
+    return subprocess.call(cmd, **kwargs)
 
 def _getenv(name):
     try:
@@ -47,39 +60,113 @@ def _template(source, dest, mapping=os.environ):
     dest_file = open(dest, 'w')
     dest_file.write(result)
     dest_file.close()
+    
+def _update_pgpass(hostname, database, username, password):
+    """
+    Using the DB_* env vars, updates the pgpass file.
+    """
+    pgpass_line = "%s:*:%s:%s" % (hostname, database, username)
+    pgpass_filename = os.path.expanduser('~postgres/.pgpass')
+    try:
+        # if exists the .pgpass file, move it then write it out without
+        os.rename(pgpass_filename, '%s.tmp' % pgpass_filename)
+        pgpass_old = open('%s.tmp' % pgpass_filename, 'r')
+        pgpass = open(pgpass_filename, 'w')
+        for line in pgpass_old:
+            # skip if the first part of the line matches our line
+            if line[:len(pgpass_line)] != pgpass_line:
+                pgpass.write(line)
+        pgpass.close()
+    except:
+        # file doesn't exist
+        pgpass = open(pgpass_filename, 'w')
+        pgpass.close()
+    # append new line
+    pgpass_line = '%s:%s\n' % (pgpass_line, password)
+    print "Updating .pgpass - %s" % pgpass_line
+    pgpass = open(pgpass_filename, 'a')
+    pgpass.write(pgpass_line)
+    pgpass.close()
+    os.chmod(pgpass_filename, 0600)
+    os.chown(pgpass_filename, pwd.getpwnam('postgres')[2], pwd.getpwnam('postgres')[3])
 
 def do_database():
     """
-    If type is dev then it wipes the database.
+    If DB_SETUP is True then it wipes the database.
+    
+    If BUILD_TYPE is 'staging' then it migrates the db using 
+    env vars DB_COPY_*
+    
     Env vars used:
      * DB_USER
      * DB_PASS
      * DB_NAME
     """
-    
-    BUILD_TYPE = _getenv('BUILD_TYPE')
     DB_USER = _getenv('DB_USER')
     DB_PASS = _getenv('DB_PASS')
     DB_NAME = _getenv('DB_NAME')
+    DB_HOST = _getenv('DB_HOST')
     DB_SETUP = eval(_getenv('DB_SETUP'))
+    DB_COPY = os.environ.get('DB_COPY') # defaults to none
 
     # dev only resets db 
     if DB_SETUP:
         print "Setting up the database"
+        # update the .pgpass file
+        _update_pgpass(DB_HOST, DB_NAME, DB_USER, DB_PASS)
         # drop db: sudo -u postgres dropdb $DB_NAME
-        subprocess.call(['sudo', '-u', 'postgres', 'dropdb', DB_NAME], stderr=open('/dev/null', 'w'))
+        _pcall(['sudo', '-u', 'postgres', 'dropdb', DB_NAME], stderr=open('/dev/null', 'w'))
 
         # drop db user: sudo -u postgres dropuser $DB_USER
-        subprocess.call(['sudo', '-u', 'postgres', 'dropuser', DB_USER], stderr=open('/dev/null', 'w'))
+        _pcall(['sudo', '-u', 'postgres', 'dropuser', DB_USER], stderr=open('/dev/null', 'w'))
 
         # create user: sudo -u postgres psql postgres
-        p = subprocess.Popen(['sudo', '-u', 'postgres', 'psql'], stdin=subprocess.PIPE)
+        p = _popen(['sudo', '-u', 'postgres', 'psql'], stdin=subprocess.PIPE)
         p.stdin.write("CREATE ROLE %s PASSWORD '%s' NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN;\n" % (DB_USER, DB_PASS))
         p.stdin.close()
         p.wait()
 
         # create db: sudo -u postgres createdb -O $DB_USER $DB_NAME
-        subprocess.call(['sudo', '-u', 'postgres', 'createdb', '-O', DB_USER, DB_NAME])
+        _pcall(['sudo', '-u', 'postgres', 'createdb', '-O', DB_USER, DB_NAME])
+        
+    if DB_COPY:
+        print "Copying database"
+        # get the migration db details
+        DB_COPY_USER = _getenv('DB_COPY_USER')
+        DB_COPY_PASS = _getenv('DB_COPY_PASS')
+        DB_COPY_NAME = _getenv('DB_COPY_NAME')
+        DB_COPY_HOST = _getenv('DB_COPY_HOST')
+        # update the .pgpass file
+        _update_pgpass(DB_COPY_HOST, DB_COPY_NAME, DB_COPY_USER, DB_COPY_PASS)
+        # dump the database to a tempfile
+        import tempfile
+        (tmp_fd, tfilename) = tempfile.mkstemp()
+        print "Dumping database '%s' to file '%s'" % (DB_COPY_NAME, tfilename)
+        tfile = os.fdopen(tmp_fd, 'rw')
+        # pg_dump database > tempfile
+        p = _popen(['sudo', '-u', 'postgres', 
+                         'pg_dump', '-v', 
+                         '-h', DB_COPY_HOST,
+                         '-U', DB_COPY_USER, 
+                         '-O',
+                         DB_COPY_NAME], 
+                         stdin=subprocess.PIPE,
+                         stdout=tfile)
+        # prompts for password
+        p.wait()
+        tfile.seek(0)
+        # load up dump into new db
+        p = _popen(['sudo', '-u', 'postgres',
+                              'psql',
+                              '-d', DB_NAME,
+                              '-h', DB_HOST,
+                              '-U', DB_USER,
+                              ],
+                              stdin=subprocess.PIPE)
+        p.stdin.write(tfile.read())
+        p.stdin.close()
+        p.wait()
+        
 
 def do_settingsfile(deploy_dir):
     """
@@ -97,13 +184,13 @@ def do_virtualenv(deploy_dir):
     """
     print "Setting up virtual environment"
     # python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-env  --django-version=$DJANGO_VERSION
-    subprocess.call(['python', 'lib/pinax/scripts/pinax-boot.py', '--development', '--source=lib/pinax', '--django-version=%s' % DJANGO_VERSION, 'pinax-env'])
+    _pcall(['python', 'lib/pinax/scripts/pinax-boot.py', '--development', '--source=lib/pinax', '--django-version=%s' % DJANGO_VERSION, 'pinax-env'])
     # activate it
     activate_this = os.path.join(deploy_dir, "pinax-env/bin/activate_this.py")
     execfile(activate_this, dict(__file__=activate_this))
     os.environ['PATH'] = '%s:%s' % (os.path.join(deploy_dir, 'pinax-env/bin'), _getenv('PATH'))
     # install requirements: pip install --no-deps --requirement requirements.txt
-    subprocess.call(['pip', 'install', '--no-deps', '--requirement', 'requirements.txt'])
+    _pcall(['pip', 'install', '--no-deps', '--requirement', 'requirements.txt'])
     
 def do_django(deploy_dir):
     """
@@ -111,45 +198,57 @@ def do_django(deploy_dir):
     """
     print "Running django commands"
     # media: python manage.py build_static --noinput
-    subprocess.call(['python', 'manage.py', 'build_static', '--noinput',])
+    _pcall(['python', 'manage.py', 'build_static', '--noinput',])
+    
     # syncdb: python manage.py syncdb --noinput
-    subprocess.call(['python', 'manage.py', 'syncdb', '--noinput',])
-    # fixture
+    _pcall(['python', 'manage.py', 'syncdb', '--noinput',])
+    
+    DB_MIGRATE = eval(os.environ.get('DB_MIGRATE', 'False'))
+    if DB_MIGRATE:
+        if os.path.isfile(os.path.join(deploy_dir, 'deploy/db_migrate.sh')):
+            os.chmod(os.path.join(deploy_dir, 'deploy/db_migrate.sh'), 0775)
+            _pcall([os.path.join(deploy_dir, 'deploy/db_migrate.sh'),])
+            
+    # fixtures
     try:
-        subprocess.call(['python', 'manage.py', 'loaddata', _getenv('FIXTURE_FILE'),])
+        _pcall(['python', 'manage.py', 'loaddata', _getenv('FIXTURE_FILE'),])
     except:
         # no fixture file
         pass
     # chown the deploy dir to be the apache user
     APACHE_USER = _getenv('APACHE_USER')
-    os.chown(deploy_dir, pwd.getpwnam(APACHE_USER)[2], -1)
+    _pcall(['chown', '-R', APACHE_USER, deploy_dir])
 
 def do_cron(deploy_dir):
     """
     Setup the cron template
     """
     print "Creating cron file"
+    # get vars
     cron_dir = os.path.join(deploy_dir, 'cron.d')
+    cron_filename = _getenv('CRON_FILE')
+    cronfile = os.path.join(cron_dir, cron_filename)
+    # check if dir exists
     if not os.path.isdir(cron_dir):
         os.mkdir(cron_dir)
+        
+    # write out the cron template
     _template(
               os.path.join(deploy_dir, 'conf/cron.template'),
-              os.path.join(cron_dir, 'chronograph'),
+              os.path.join(cron_dir, cron_filename),
               )
-    # link them
-    for cronfile in os.listdir(cron_dir):
-        cronfile = os.path.join(cron_dir, cronfile)
-        # delete if exists
-        try:
-            os.unlink(os.path.join('/etc/cron.d/', os.path.basename(cronfile)))
-        except:
-            pass
-        # link to cron.d dir
-        os.symlink(cronfile, os.path.join('/etc/cron.d/', os.path.basename(cronfile)))
-        # need to be owned by root
-        os.chown(cronfile, pwd.getpwnam('root')[2], -1)
-        # need to be exec
-        os.chmod(cronfile, 0775)
+    
+    # delete link if exists
+    try:
+        os.unlink(os.path.join('/etc/cron.d/', cron_filename))
+    except:
+        pass
+    # link to cron.d dir
+    os.symlink(cronfile, os.path.join('/etc/cron.d/', cron_filename))
+    # need to be owned by root
+    os.chown(cronfile, pwd.getpwnam('root')[2], -1)
+    # need to be exec
+    os.chmod(cronfile, 0775)
     # make chonograph.sh executable
     os.chmod(os.path.join(deploy_dir, 'deploy/chronograph.sh'), 0775)
     
@@ -160,7 +259,7 @@ def do_apache(deploy_dir):
     print "Setting up Apache"
     # enable required mods
     print "Enabling mod_rewrite"
-    subprocess.call(['a2enmod', 'rewrite'])
+    _pcall(['a2enmod', 'rewrite'])
     # rewrite config
     print "Writing out http.conf"
     _template(
@@ -188,10 +287,10 @@ def do_apache(deploy_dir):
     os.symlink(os.path.join(deploy_dir, 'conf/http.conf'), apache_conf)
     
     # enable if needed
-    subprocess.call(['a2ensite', _getenv('APACHE_CONF')])
+    _pcall(['a2ensite', _getenv('APACHE_CONF')])
     
     print "Testing Apache config"
-    retcode = subprocess.call(['apache2ctl', 'configtest'])
+    retcode = _pcall(['apache2ctl', 'configtest'])
     if retcode:
         print "Error in apache config"
         # copy back
@@ -199,7 +298,7 @@ def do_apache(deploy_dir):
         raise Usage('Error in apache config')
     
     print "Restarting Apache"
-    subprocess.call(['apache2ctl', 'restart'])
+    _pcall(['apache2ctl', 'restart'])
     
     
 

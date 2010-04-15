@@ -164,6 +164,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     
     'autoslug',
+    'south',
     
     # external, added since project
     "photologue",
