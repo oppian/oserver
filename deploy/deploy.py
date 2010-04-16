@@ -321,6 +321,13 @@ def do_apache(deploy_dir):
     print "Restarting Apache"
     _pcall(['apache2ctl', 'restart'])
     
+def do_sitemedia(deploy_dir):
+    """
+    Copies the site media directory.
+    """
+    site_media_src = _getenv('COPY_SITE_MEDIA')
+    # rsync -avz site_media_src site_media
+    _pcall(['rsync', '-avz', site_media_src, 'site_media'])
     
 
 def debug_env():
@@ -346,6 +353,8 @@ def process(deploy_dir):
     # cron file setup
     do_cron(deploy_dir)
     do_apache(deploy_dir)
+    # site media
+    do_sitemedia(deploy_dir)
 
 
 ## main template
