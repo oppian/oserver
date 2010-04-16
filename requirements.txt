@@ -84,3 +84,4 @@ django-build==0.2
 django-chronograph==svn-r21-git.2
 
 south
+django-defaultsite==1.1
