@@ -13,14 +13,13 @@ ENV:
  * DEBUG
  * APACHE_USER
  * APACHE_CONF
+ * DJANGO_VERSION
  * FIXTURE_FILE (optional)
  * DB_COPY_USER (optional)
  * DB_COPY_PASS (optional)
  * DB_COPY_NAME (optional)
  * DB_COPY_HOST (optional)
 '''
-
-DJANGO_VERSION = "1.2.dev12229"
 
 from string import Template
 import getopt
@@ -201,7 +200,7 @@ def do_virtualenv(deploy_dir):
     """
     print "Setting up virtual environment"
     # python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-env  --django-version=$DJANGO_VERSION
-    _pcall(['python', 'lib/pinax/scripts/pinax-boot.py', '--development', '--source=lib/pinax', '--django-version=%s' % DJANGO_VERSION, 'pinax-env'])
+    _pcall(['python', 'lib/pinax/scripts/pinax-boot.py', '--development', '--source=lib/pinax', '--django-version=%s' % _getenv('DJANGO_VERSION'), 'pinax-env'])
     # activate it
     activate_this = os.path.join(deploy_dir, "pinax-env/bin/activate_this.py")
     execfile(activate_this, dict(__file__=activate_this))
