@@ -350,13 +350,14 @@ def process(deploy_dir):
     do_settingsfile(deploy_dir)
     # setup virtualenv
     do_virtualenv(deploy_dir)
+    # site media
+    do_sitemedia(deploy_dir)
     # django/pinax setup
     do_django(deploy_dir)
     # cron file setup
     do_cron(deploy_dir)
     do_apache(deploy_dir)
-    # site media
-    do_sitemedia(deploy_dir)
+    
 
 
 ## main template
