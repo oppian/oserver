@@ -67,7 +67,7 @@ def _template(source, dest, mapping=os.environ):
     # substitute the variables
     template = Template(contents)
     result = template.substitute(mapping)
-    # write the template to settings_local.py
+    # write the template to dest
     dest_file = open(dest, 'w')
     dest_file.write(result)
     dest_file.close()
@@ -246,26 +246,15 @@ def do_cron(deploy_dir):
     """
     print "Creating cron file"
     # get vars
-    cron_dir = os.path.join(deploy_dir, 'cron.d')
     cron_filename = _getenv('CRON_FILE')
-    cronfile = os.path.join(cron_dir, cron_filename)
-    # check if dir exists
-    if not os.path.isdir(cron_dir):
-        os.mkdir(cron_dir)
+    cronfile = os.path.join('/etc/cron.d/', cron_filename)
         
     # write out the cron template
     _template(
               os.path.join(deploy_dir, 'conf/cron.template'),
-              os.path.join(cron_dir, cron_filename),
+              cronfile,
               )
     
-    # delete link if exists
-    try:
-        os.unlink(os.path.join('/etc/cron.d/', cron_filename))
-    except:
-        pass
-    # link to cron.d dir
-    os.symlink(cronfile, os.path.join('/etc/cron.d/', cron_filename))
     # need to be owned by root
     os.chown(cronfile, pwd.getpwnam('root')[2], -1)
     # need to be exec
@@ -277,46 +266,30 @@ def do_apache(deploy_dir):
     """
     Setups apache
     """
-    print "Setting up Apache"
+    print "Setting up Apache2"
     # enable required mods
     print "Enabling mod_rewrite"
     _pcall(['a2enmod', 'rewrite'])
+    
+    apache_conf = os.path.join('/etc/apache2/sites-available', _getenv('APACHE_CONF'))
+    
     # rewrite config
-    print "Writing out http.conf"
+    print "Writing out Apache2 conf: %s" % apache_conf
     _template(
               os.path.join(deploy_dir, 'conf/http.conf.template'),
-              os.path.join(deploy_dir, 'conf/http.conf'),
+              apache_conf,
               )
-    
-    print "Saving existing conf"
-    apache_conf = os.path.join('/etc/apache2/sites-available', _getenv('APACHE_CONF'))
-    try:
-        shutil.copyfile(apache_conf, os.path.join('/tmp', _getenv('APACHE_CONF')))
-    except:
-        # config doesn't exists
-        pass
-    
-    # link to apache conf
-    print "Linking to APACHE_CONF"
-    try:
-        # delete existing
-        os.unlink(apache_conf)
-    except:
-        # doesn't exist
-        pass
-    # create the symlink
-    os.symlink(os.path.join(deploy_dir, 'conf/http.conf'), apache_conf)
     
     # enable if needed
     _pcall(['a2ensite', _getenv('APACHE_CONF')])
     
-    print "Testing Apache config"
+    print "Testing Apache2 config"
     retcode = _pcall(['apache2ctl', 'configtest'])
     if retcode:
-        print "Error in apache config"
-        # copy back
-        shutil.copyfile(os.path.join('/tmp', _getenv('APACHE_CONF')), apache_conf)
-        raise Usage('Error in apache config')
+        print "Error in Apache2 config"
+        # disable site
+        _pcall(['a2dissite', _getenv('APACHE_CONF')])
+        raise Usage('Error in Apache2 config')
     
     print "Restarting Apache"
     _pcall(['apache2ctl', 'restart'])
