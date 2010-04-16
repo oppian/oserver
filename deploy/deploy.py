@@ -327,8 +327,10 @@ def do_sitemedia(deploy_dir):
     """
     site_media_src = os.environ.get('COPY_SITE_MEDIA', None)
     if site_media_src:
+        site_media_src = os.path.abspath(os.path.join(deploy_dir, site_media_src))
+        site_media_dest = os.path.abspath(os.path.join(deploy_dir, 'site_media'))
         # rsync -avz site_media_src site_media
-        _pcall(['rsync', '-avz', site_media_src, 'site_media'])
+        _pcall(['rsync', '-avz', site_media_src, site_media_dest])
     
 
 def debug_env():
