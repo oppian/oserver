@@ -14,6 +14,8 @@ from emailconfirmation.signals import email_confirmed
 from timezones.fields import TimeZoneField
 
 
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^timezones\.fields\.TimeZoneField"])
 
 class Account(models.Model):
     
