@@ -26,8 +26,10 @@ import getopt
 import os
 import subprocess
 import sys
-import pwd
-import shutil
+try:
+    import pwd
+except ImportError:
+    pwd = None
 
 class ProcessException(Exception):
     def __init__(self, cmd, retcode):
@@ -70,7 +72,7 @@ def _template(source, dest, mapping=os.environ):
     dest_file = open(dest, 'w')
     dest_file.write(result)
     dest_file.close()
-    
+
 def _update_pgpass(hostname, database, username, password):
     """
     Using the DB_* env vars, updates the pgpass file.
@@ -144,7 +146,7 @@ def do_database():
 
         # create db: sudo -u postgres createdb -O $DB_USER $DB_NAME
         _pcall(['sudo', '-u', 'postgres', 'createdb', '-O', DB_USER, DB_NAME])
-        
+
     if DB_COPY:
         print "Copying database"
         # get the migration db details
@@ -160,12 +162,12 @@ def do_database():
         print "Dumping database '%s' to file '%s'" % (DB_COPY_NAME, tfilename)
         tfile = os.fdopen(tmp_fd, 'rw')
         # pg_dump database > tempfile
-        p = _popen(['sudo', '-u', 'postgres', 
-                         'pg_dump', '-v', 
+        p = _popen(['sudo', '-u', 'postgres',
+                         'pg_dump', '-v',
                          '-h', DB_COPY_HOST,
-                         '-U', DB_COPY_USER, 
+                         '-U', DB_COPY_USER,
                          '-O',
-                         DB_COPY_NAME], 
+                         DB_COPY_NAME],
                          stdin=subprocess.PIPE,
                          stdout=tfile)
         # prompts for password
@@ -182,7 +184,7 @@ def do_database():
         p.stdin.write(tfile.read())
         p.stdin.close()
         p.wait()
-        
+
 
 def do_settingsfile(deploy_dir):
     """
@@ -193,7 +195,7 @@ def do_settingsfile(deploy_dir):
               os.path.join(deploy_dir, 'settings_template.py'),
               os.path.join(deploy_dir, 'settings_local.py'),
               )
-    
+
 def do_virtualenv(deploy_dir):
     """
     Set up the virtual environment.
@@ -207,31 +209,31 @@ def do_virtualenv(deploy_dir):
     os.environ['PATH'] = '%s:%s' % (os.path.join(deploy_dir, 'pinax-env/bin'), _getenv('PATH'))
     # install requirements: pip install --no-deps --requirement requirements.txt
     _pcall(['pip', 'install', '--no-deps', '--requirement', 'requirements.txt'])
-    
+
 def do_django(deploy_dir):
     """
     This runs the various django commands to setup the media, database, etc
     """
     print "Running django commands"
     # media: python manage.py build_static --noinput
-    _pcall(['python', 'manage.py', 'build_static', '--noinput',])
-    
+    _pcall(['python', 'manage.py', 'build_static', '--noinput', ])
+
     # syncdb: python manage.py syncdb --noinput
-    _pcall(['python', 'manage.py', 'syncdb', '--noinput',])
-    
+    _pcall(['python', 'manage.py', 'syncdb', '--noinput', ])
+
     DB_MIGRATE = eval(os.environ.get('DB_MIGRATE', 'False'))
     if DB_MIGRATE:
         # run custom migrate script
         if os.path.isfile(os.path.join(deploy_dir, 'deploy/db_migrate.sh')):
             os.chmod(os.path.join(deploy_dir, 'deploy/db_migrate.sh'), 0775)
-            _pcall([os.path.join(deploy_dir, 'deploy/db_migrate.sh'),])
+            _pcall([os.path.join(deploy_dir, 'deploy/db_migrate.sh'), ])
     else:
         # run generic migrate: python manage.py migrate --all -v 2
         _pcall(['python', 'manage.py', 'migrate', '--all', '-v', '2'])
-            
+
     # fixtures
     try:
-        _pcall(['python', 'manage.py', 'loaddata', _getenv('FIXTURE_FILE'),])
+        _pcall(['python', 'manage.py', 'loaddata', _getenv('FIXTURE_FILE'), ])
     except:
         # no fixture file
         pass
@@ -247,20 +249,20 @@ def do_cron(deploy_dir):
     # get vars
     cron_filename = _getenv('CRON_FILE')
     cronfile = os.path.join('/etc/cron.d/', cron_filename)
-        
+
     # write out the cron template
     _template(
               os.path.join(deploy_dir, 'conf/cron.template'),
               cronfile,
               )
-    
+
     # need to be owned by root
     os.chown(cronfile, pwd.getpwnam('root')[2], -1)
     # need to be exec
     os.chmod(cronfile, 0775)
     # make chonograph.sh executable
     os.chmod(os.path.join(deploy_dir, 'deploy/chronograph.sh'), 0775)
-    
+
 def do_apache(deploy_dir):
     """
     Setups apache
@@ -269,19 +271,19 @@ def do_apache(deploy_dir):
     # enable required mods
     print "Enabling mod_rewrite"
     _pcall(['a2enmod', 'rewrite'])
-    
+
     apache_conf = os.path.join('/etc/apache2/sites-available', _getenv('APACHE_CONF'))
-    
+
     # rewrite config
     print "Writing out Apache2 conf: %s" % apache_conf
     _template(
               os.path.join(deploy_dir, 'conf/http.conf.template'),
               apache_conf,
               )
-    
+
     # enable if needed
     _pcall(['a2ensite', _getenv('APACHE_CONF')])
-    
+
     print "Testing Apache2 config"
     retcode = _pcall(['apache2ctl', 'configtest'])
     if retcode:
@@ -289,10 +291,10 @@ def do_apache(deploy_dir):
         # disable site
         _pcall(['a2dissite', _getenv('APACHE_CONF')])
         raise Usage('Error in Apache2 config')
-    
+
     print "Restarting Apache"
     _pcall(['apache2ctl', 'restart'])
-    
+
 def do_sitemedia(deploy_dir):
     """
     Copies the site media directory.
@@ -302,7 +304,7 @@ def do_sitemedia(deploy_dir):
         site_media_src = os.path.abspath(os.path.join(deploy_dir, site_media_src))
         # rsync -avz site_media_src site_media
         _pcall(['rsync', '-avz', site_media_src, deploy_dir])
-    
+
 
 def debug_env():
     import sys
@@ -329,7 +331,7 @@ def process(deploy_dir):
     # cron file setup
     do_cron(deploy_dir)
     do_apache(deploy_dir)
-    
+
 
 
 ## main template
