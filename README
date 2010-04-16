@@ -1,5 +1,6 @@
+=======
 oserver
--------
+=======
 
 dev installation
 ----------------
@@ -26,7 +27,6 @@ python manage.py runserver 0.0.0.0:8000
 ** to send emails/syncfb: **
 > python manage.py cron
 
-
 ** when pinax/lib changes **
 git submodule update
 rm -rf pinax-env
@@ -35,4 +35,3 @@ mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/p
 mac> source pinax-env/bin/activate
 pc> pinax-env\Scripts\activate.bat
 pip install --no-deps -r requirements.txt
-
