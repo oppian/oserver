@@ -18,13 +18,5 @@ TODO LIST
 # TODO: add test user into fixture
 
 # TODO: style multiselect widget to look like photologue style
-
- * setup pypi on the download server and use it for the libs
- 
- * change build processes to run as non-root
- 
- * 2 builders, oppster and oppster-dev
- 
- * release defaultsite opensource
  
  * middleware json fix bug where TEMPLATE not exist

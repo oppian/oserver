@@ -16,15 +16,14 @@ mac>/System/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6 lib/p
 mac> source pinax-env/bin/activate
 pc> pinax-env\Scripts\activate.bat
 
-# TODO: create githook for this automatically
+# todo: create githook for this automatically
 ** update 'local' requirements: (done after each sync) **
 pip install --no-deps -r requirements.txt
 python manage.py syncdb --noinput
+python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 
-
-
-** to send emails: **
+** to send emails/syncfb: **
 > python manage.py cron
 
 
