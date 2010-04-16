@@ -325,9 +325,10 @@ def do_sitemedia(deploy_dir):
     """
     Copies the site media directory.
     """
-    site_media_src = _getenv('COPY_SITE_MEDIA')
-    # rsync -avz site_media_src site_media
-    _pcall(['rsync', '-avz', site_media_src, 'site_media'])
+    site_media_src = os.environ.get('COPY_SITE_MEDIA', None)
+    if site_media_src:
+        # rsync -avz site_media_src site_media
+        _pcall(['rsync', '-avz', site_media_src, 'site_media'])
     
 
 def debug_env():
