@@ -38,3 +38,4 @@ pc> pinax-env\Scripts\activate.bat
 pip install --no-deps -r requirements.txt
 
 
+test
