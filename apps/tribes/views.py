@@ -102,9 +102,10 @@ def delete(request, group_slug=None, redirect_url=None):
 
 @login_required
 def your_tribes(request, template_name="tribes/your_tribes.html"):
-    return render_to_response(template_name, {
+    return {
         "tribes": Tribe.objects.filter(members=request.user).order_by("name"),
-    }, context_instance=RequestContext(request))
+        "TEMPLATE": template_name,
+    }
 
 
 def tribe(request, tribe_slug=None, form_class=TribeUpdateForm,
