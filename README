@@ -2,6 +2,18 @@
 oserver
 =======
 
+Django based server for the oframe idea. OFrame was an idea to have a picture frame like
+device in peoples houses that displayed images from social media. This was a POC that
+pulled in images from your facebook and display it on a client.
+
+Example would be that you buy your grandmother the OFrame and configure it to display
+pictures from her family. It would sit on her table and just slideshow through pictures.
+It would be touchscreen to allow her to go forward or back on pictures she liked. Other
+features could be that she likes a picture and it will show more often, dislike a
+picture and it won't show etc. It would also be a platform for other apps to run on.
+
+It could potentially even show ads and be funded in that way. 
+
 dev installation
 ----------------
 
