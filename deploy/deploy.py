@@ -201,8 +201,8 @@ def do_virtualenv(deploy_dir):
     Set up the virtual environment.
     """
     print "Setting up virtual environment"
-    # python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-env  --django-version=$DJANGO_VERSION
-    _pcall(['python', 'lib/pinax/scripts/pinax-boot.py', '--development', '--source=lib/pinax', '--django-version=%s' % _getenv('DJANGO_VERSION'), 'pinax-env'])
+    # python lib/pinax/scripts/pinax-boot.py --development --source=lib/pinax pinax-env
+    _pcall(['python', 'lib/pinax/scripts/pinax-boot.py', '--development', '--source=lib/pinax', 'pinax-env'])
     # activate it
     activate_this = os.path.join(deploy_dir, "pinax-env/bin/activate_this.py")
     execfile(activate_this, dict(__file__=activate_this))
